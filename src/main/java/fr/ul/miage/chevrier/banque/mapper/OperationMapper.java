@@ -1,4 +1,3 @@
 package fr.ul.miage.chevrier.banque.mapper;
 
-public interface OperationMapper {
-}
+public interface OperationMapper {}

@@ -1,12 +1,13 @@
 package fr.ul.miage.chevrier.banque.entity;
 
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import java.io.Serializable;
-import java.time.Instant;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -16,7 +17,8 @@ import java.util.UUID;
 public class Card implements Serializable {
     @Id
     private UUID id;
-    private Instant dateAdded;
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private Date dateAdded = new Date();
     private String number;
     private String code;
     private String cryptogram;
@@ -25,6 +27,7 @@ public class Card implements Serializable {
     private Integer contactless;
     private Double cap;
     private Integer virtual;
+    private boolean active;
     @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;

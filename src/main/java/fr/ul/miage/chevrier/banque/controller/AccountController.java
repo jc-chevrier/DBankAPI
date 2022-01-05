@@ -4,52 +4,106 @@ import fr.ul.miage.chevrier.banque.assembler.AccountAssembler;
 import fr.ul.miage.chevrier.banque.dto.AccountInput;
 import fr.ul.miage.chevrier.banque.dto.AccountView;
 import fr.ul.miage.chevrier.banque.service.AccountService;
-import fr.ul.miage.chevrier.banque.validator.AccountValidator;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+import javax.transaction.Transactional;
 import java.util.UUID;
 
+/**
+ * Contrôleur ppour la gestion des compte
+ * bancaires des clients de la banque.
+ */
 @RestController
 @RequestMapping(value = "accounts", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 public class AccountController {
+    //Service pour la couche métier dde la gestion des
+    //comptes bancaires.
     private final AccountService accountService;
+    //Assembleur pour associer aux vues des comptes bancaires
+    //des liens d'actions sur l'API (HATEOAS).
     private final AccountAssembler accountAssembler;
+    //Validateur pour assurer la cohérence et l'intégrité des
+    //comptes bancaires gérés.
     //private final AccountValidator accountValidator;
 
+    /**
+     * Obtenir tous les comptes bancaires actifs.
+     *
+     * @return CollectionModel<EntityModel<AccountView>>    Collection de compte bancaire.
+     */
     @GetMapping
     public CollectionModel<EntityModel<AccountView>> findAll() {
         return accountAssembler.toCollectionModel(accountService.findAll());
     }
 
+    /**
+     * Obtenir un compte bancaire actif.
+     *
+     * @param id                            Identifiant du compte bancaire cherché.
+     * @return EntityModel<AccountView>     Vue sur le compte bancaire.
+     */
     @GetMapping(value = "{id}")
-    public EntityModel<AccountView> find(@PathVariable("id") UUID UUID) {
-        return accountAssembler.toModel(accountService.findById(UUID));
+    public EntityModel<AccountView> find(@PathVariable("id") UUID id) {
+        return accountAssembler.toModel(accountService.findById(id));
     }
 
+    /**
+     * Créer un nouveau compte bancaire.
+     *
+     * @param input                         Informations saisies du compte bancaire à créer.
+     * @return EntityModel<AccountView>     Vue sur le compte bancaire créé.
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EntityModel<AccountView> create(@RequestBody AccountInput newAccount) {
-        return accountAssembler.toModel(accountService.create(newAccount));
+    @Transactional
+    public EntityModel<AccountView> create(@RequestBody AccountInput input) {
+        return accountAssembler.toModel(accountService.create(input));
     }
 
-    @PutMapping(value = "{id}")//TODO Vérifier route.
-    public AccountView update(@PathVariable("id") String id, @RequestBody AccountInput newAccount) {
-        return null;//TODO
+    /**
+     * Mettre à jour les informations d'un compte bancaire actif
+     * pouvant être modifier : nom, prénom, numéro de passeport,
+     * date de naissance, et IBAN.
+     *
+     * @param id                            Identifiant du compte bancaire à modifier.
+     * @param input                         Informations modifiées du compte.
+     * @return EntityModel<AccountView>     Vue sur le compte bancaire modifié.
+     */
+    @PutMapping(value = "{id}")
+    @Transactional
+    public EntityModel<AccountView> update(@PathVariable("id") UUID id, @RequestBody AccountInput input) {
+        return accountAssembler.toModel(accountService.update(id, input));
     }
 
-    @PatchMapping//(value = "{id}")TODO Vérifier route.
-    public AccountView updatePartial(@PathVariable("id") String id, @RequestBody AccountInput newAccount) {
-        return null;//TODO
+    /**
+     * Mettre à jour uniquement certaines informations d'un compte
+     * bancaire actif pouvant être modifier : nom, et/ou prénom,
+     * et/ou numéro de passeport, et/ou date de naissance, et/ou IBAN.
+     *<
+     * @param id                            Identifiant du compte bancaire à modifier.
+     * @param input                         Informations modifiées du compte bacnaire.
+     * @return EntityModel<AccountView>     Vue sur le compte bancaire modifié.
+     */
+    @PatchMapping(value = "{id}")
+    @Transactional
+    public EntityModel<AccountView> updatePartial(@PathVariable("id") UUID id, @RequestBody AccountInput input) {
+        return accountAssembler.toModel(accountService.updatePartial(id, input));
     }
 
-    @PatchMapping(value = "{id}")//TODO Vérifier route.
-    public AccountView deletePartial(@PathVariable("id") String id) {
-        return null;//TODO
+    /**
+     * Supprimer un compte bancaire actif.
+     *
+     * @param id    Identifiant du compte bancaire à supprimer.
+     */
+    @DeleteMapping(value = "{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
+    public void delete(@PathVariable("id") UUID id) {
+        accountService.deleteById(id);
     }
 }

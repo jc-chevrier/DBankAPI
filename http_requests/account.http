@@ -1,0 +1,67 @@
+###
+GET http://localhost:8090/accounts
+
+###
+GET http://localhost:8090/accounts/5d707d00-945f-4c7c-ba02-e80ce826a2ad
+
+###
+GET http://localhost:8090/accounts/5d707d00-945f-4c7c-ba02-e80ce826a2ee
+
+###
+POST http://localhost:8090/accounts
+Content-Type: application/json
+
+{
+  "firstName": "léa",
+  "lastName": "flavi",
+  "birthDate": "05/02/1986",
+  "passportNumber": "935480076",
+  "iban": "EN5630001007941234567890185"
+}
+
+###
+PUT http://localhost:8090/accounts/5d707d00-945f-4c7c-ba02-e80ce826a2ad
+Content-Type: application/json
+
+{
+  "firstName": "louis",
+  "lastName": "oliverus",
+  "birthDate": "09/09/1999",
+  "passportNumber": "9999480076",
+  "iban": "FR9930001007941234567890185"
+}
+###
+PUT http://localhost:8090/accounts/5d707d00-945f-4c7c-ba02-e80ce826a2a2
+Content-Type: application/json
+
+{
+  "firstName": "louis",
+  "lastName": "oliverus",
+  "birthDate": "09/09/1999",
+  "passportNumber": "9999480076",
+  "iban": "FR9930001007941234567890185"
+}
+
+###
+PATCH http://localhost:8090/accounts/5d707d00-945f-4c7c-ba02-e80ce826a2ad
+Content-Type: application/json
+
+{
+  "firstName": "mariooo",
+  "lastName": "oliverus"
+}
+
+###
+PATCH http://localhost:8090/accounts/5d707d00-945f-4c7c-ba02-e80ce826a2a2
+Content-Type: application/json
+
+{
+  "firstName": "mariooo",
+  "lastName": "oliverus"
+}
+
+###
+DELETE http://localhost:8090/accounts/5d707d00-945f-4c7c-ba02-e80ce826a2ad
+
+###
+DELETE http://localhost:8090/accounts/5d707d00-945f-4c7c-ba02-e80ce826a2ae

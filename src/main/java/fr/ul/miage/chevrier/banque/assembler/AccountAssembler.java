@@ -1,6 +1,7 @@
 package fr.ul.miage.chevrier.banque.assembler;
 
 import fr.ul.miage.chevrier.banque.controller.AccountController;
+import fr.ul.miage.chevrier.banque.dto.AccountInput;
 import fr.ul.miage.chevrier.banque.dto.AccountView;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -17,10 +18,11 @@ public class AccountAssembler implements RepresentationModelAssembler<AccountVie
     @Override
     public EntityModel<AccountView> toModel(AccountView accountView) {
         return EntityModel.of(accountView,
-                              linkTo(methodOn(AccountController.class).find(accountView.getId())).withSelfRel(),
-                              linkTo(methodOn(AccountController.class).findAll()).withRel("collection"));
+                              linkTo(methodOn(AccountController.class).findAll()).withRel("collection"),
+                              linkTo(methodOn(AccountController.class).find(accountView.getId())).withSelfRel());
     }
 
+    @Override
     public CollectionModel<EntityModel<AccountView>> toCollectionModel(Iterable<? extends AccountView> accountsViews) {
         List<EntityModel<AccountView>> accountModel = StreamSupport.stream(accountsViews.spliterator(), false)
                                                                     .map(this::toModel)

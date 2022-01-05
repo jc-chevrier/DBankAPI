@@ -1,11 +1,11 @@
 package fr.ul.miage.chevrier.banque.entity;
 
-import com.sun.istack.Nullable;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.io.Serializable;
-import java.time.Instant;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -15,13 +15,15 @@ import java.util.UUID;
 public class Account implements Serializable {
     @Id
     private UUID id;
-    private Instant dateAdded;
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private Date dateAdded = new Date();
     private String firstName;
     private String lastName;
-    private Instant birthDate;
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    private Date birthDate;
     private String passportNumber;
-    @Nullable
     private String secret;
     private String IBAN;
     private Double balance;
+    private boolean active = true;
 }
