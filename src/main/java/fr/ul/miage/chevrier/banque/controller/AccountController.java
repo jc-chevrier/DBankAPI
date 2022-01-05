@@ -8,9 +8,11 @@ import fr.ul.miage.chevrier.banque.validator.AccountValidator;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "accounts", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -26,13 +28,14 @@ public class AccountController {
     }
 
     @GetMapping(value = "{id}")
-    public List<AccountView> find(@PathVariable("id") String UUID) {
-        return null;//TODO
+    public EntityModel<AccountView> find(@PathVariable("id") UUID UUID) {
+        return accountAssembler.toModel(accountService.findById(UUID));
     }
 
     @PostMapping
-    public AccountView create(@RequestBody AccountInput newAccount) {
-        return null;//TODO
+    @ResponseStatus(HttpStatus.CREATED)
+    public EntityModel<AccountView> create(@RequestBody AccountInput newAccount) {
+        return accountAssembler.toModel(accountService.create(newAccount));
     }
 
     @PutMapping(value = "{id}")//TODO Vérifier route.

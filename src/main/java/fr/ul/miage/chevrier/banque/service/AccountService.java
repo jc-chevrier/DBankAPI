@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -24,10 +25,14 @@ public class AccountService {
         return accountMapper.toDto(accountRepository.findAll());
     }
 
+    public AccountView findById(UUID UUID) {
+        return accountMapper.toDto(accountRepository.findById(UUID).get());
+    }
+
     public AccountView create(AccountInput accountInput) {
         var account = accountMapper.toEntity(accountInput);
         account.setId(UUID.randomUUID());//TODO écrire une fonction pour éviter les collisions.
-        account.setDateAdded(new Date());
+        account.setDateAdded(Instant.now());
         account.setSecret("");//TODO revoir pour authentification.
         account.setBalance(0.0);
         account = accountRepository.save(account);

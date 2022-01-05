@@ -4,10 +4,8 @@ import com.sun.istack.Nullable;
 import lombok.*;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -17,10 +15,10 @@ import java.util.UUID;
 public class Account implements Serializable {
     @Id
     private UUID id;
-    private Date dateAdded;
+    private Instant dateAdded;
     private String firstName;
     private String lastName;
-    private Date birthDate;
+    private Instant birthDate;
     private String passportNumber;
     @Nullable
     private String secret;

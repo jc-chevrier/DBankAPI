@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -16,7 +16,7 @@ import java.util.UUID;
 public class Card implements Serializable {
     @Id
     private UUID id;
-    private Date dateAdded;
+    private Instant dateAdded;
     private String number;
     private String code;
     private String cryptogram;

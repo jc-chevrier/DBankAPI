@@ -14,8 +14,7 @@ public class AccountView {
     private Date dateAdded;
     private String firstName;
     private String lastName;
-    private Date birthDate;
-    private String passportNumber;
     private String IBAN;
     private Double balance;
+    //TODO Pas de birthdate, ni de passportNumber ?
 }

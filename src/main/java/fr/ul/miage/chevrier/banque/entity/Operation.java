@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -16,7 +16,7 @@ import java.util.UUID;
 public class Operation {
     @Id
     private UUID id;
-    private Date dateAdded;
+    private Instant dateAdded;
     private String label;
     private Double amount;
     private String externalAccountIBAN;
