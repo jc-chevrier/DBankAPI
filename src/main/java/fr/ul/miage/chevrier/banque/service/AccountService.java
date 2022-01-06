@@ -7,7 +7,6 @@ import fr.ul.miage.chevrier.banque.mapper.AccountMapper;
 import fr.ul.miage.chevrier.banque.repository.AccountRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -22,48 +21,50 @@ public class AccountService {
     private final AccountMapper accountMapper;
 
     /**
-     * Chercher tous les comptes bancaires actifs.
+     * Chercher tous les comptes bancaires.
      *
-     * @return List<AccountView>    Les comptes bancaires cherchés.
+     * @return CollectionModel<EntityModel<AccountView>>    Collection de compte bancaire.
      */
     public List<AccountView> findAll() {//TODO filter actif
-        return accountMapper.toDto(accountRepository.findAll());
+        return accountMapper.toDto(accountRepository.findAllActive());
     }
 
     /**
-     * Obtenir un compte bancaire actif.
+     * Chercher un compte bancaire.
      *
-     * @param id    Identifiant du compte cherché.
-     * @return      Vue sur le commte cherché.
+     * @param id                            Identifiant du compte bancaire cherché.
+     * @return EntityModel<AccountView>     Vue sur le compte bancaire.
      */
-    public AccountView findById(UUID id) {//TODO filter actif
-        return accountMapper.toDto(accountRepository.findById(id).orElseThrow(() -> AccountNotFoundException.of(id)));
+    public AccountView findById(UUID id) {
+        return accountMapper.toDto(accountRepository.findActiveById(id).orElseThrow(() -> AccountNotFoundException.of(id)));
     }
 
     /**
-     * Créer un compte bancaire.
+     * Créer un nouveau compte bancaire.
      *
-     * @param input             Informations aisies pour le compte bancaire à créer.
-     * @return AccountView      Vue sur le compte bancaire créé.
+     * @param input                         Informations saisies du compte bancaire à créer.
+     * @return EntityModel<AccountView>     Vue sur le compte bancaire créé.
      */
     public AccountView create(AccountInput input) {
         var account = accountMapper.toEntity(input);
         account.setId(UUID.randomUUID());
-        account.setSecret("");//TODO à revoir pour authentification.
+        account.setSecret("secret");//TODO à revoir pour authentification.
         account.setBalance(0.0);
         account = accountRepository.save(account);
         return accountMapper.toDto(account);
     }
 
     /**
-     * Modifier un compte bancaire actif.
+     * Mettre à jour les informations d'un compte bancaire pouvant
+     * être modifier : nom, prénom, numéro de passeport, date de
+     * naissance, et IBAN.
      *
-     * @param id                Identifiant du compte à modifier.
-     * @param input             Informations saisies pour le compte bancaire à modifier.
-     * @return AccountView      Vue sur le compte bancaire modifié.
+     * @param id                            Identifiant du compte bancaire à modifier.
+     * @param input                         Informations modifiées du compte.
+     * @return EntityModel<AccountView>     Vue sur le compte bancaire modifié.
      */
     public AccountView update(UUID id, AccountInput input) {
-        var account = accountRepository.findById(id)//TODO filter actif
+        var account = accountRepository.findActiveById(id)
                                                 .orElseThrow(() -> AccountNotFoundException.of(id));
         account.setFirstName(input.getFirstName());
         account.setLastName(input.getLastName());
@@ -75,14 +76,16 @@ public class AccountService {
     }
 
     /**
-     * Modifier partiellement un compte bancaire actif.
+     * Mettre à jour uniquement certaines informations d'un compte
+     * bancaire pouvant être modifier : nom, et/ou prénom, et/ou
+     * numéro de passeport, et/ou date de naissance, et/ou IBAN.
      *
-     * @param id                Identifiant du compte à modifier.
-     * @param input             Informations saisies pour le compte bancaire à modifier.
-     * @return AccountView      Vue sur le compte bancaire modifié.
+     * @param id                            Identifiant du compte bancaire à modifier.
+     * @param input                         Informations modifiées du compte bancaire.
+     * @return EntityModel<AccountView>     Vue sur le compte bancaire modifié.
      */
     public AccountView updatePartial(UUID id, AccountInput input) {
-        var account = accountRepository.findById(id)//TODO filter actif
+        var account = accountRepository.findActiveById(id)
                                                 .orElseThrow(() -> AccountNotFoundException.of(id));
         if(input.getFirstName() != null) {
             account.setFirstName(input.getFirstName());
@@ -104,14 +107,15 @@ public class AccountService {
     }
 
     /**
-     * Supprimer un compte bancaire actif,
-     * c'est-à-dire le rendre inactif.
+     * Supprimer un compte bancaire, c'est-à-dire le
+     * rendre inactif.
      *
-     * @param id        Identifiant du compte.
+     * @param id        Identifiant du compte bancaire.
      */
     public void deleteById(UUID id) {
-        var account = accountRepository.findById(id).get();//TODO filter actif
-        account.setActive(false);
-        accountRepository.save(account);
+       accountRepository.findActiveById(id).ifPresent(account -> {
+            account.setActive(false);
+            accountRepository.save(account);
+       });
     }
 }

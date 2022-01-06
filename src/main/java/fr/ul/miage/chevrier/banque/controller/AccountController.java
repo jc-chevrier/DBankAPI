@@ -14,14 +14,14 @@ import javax.transaction.Transactional;
 import java.util.UUID;
 
 /**
- * Contrôleur ppour la gestion des compte
+ * Contrôleur pour la gestion des comptes
  * bancaires des clients de la banque.
  */
 @RestController
 @RequestMapping(value = "accounts", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 public class AccountController {
-    //Service pour la couche métier dde la gestion des
+    //Service pour la couche métier de la gestion des
     //comptes bancaires.
     private final AccountService accountService;
     //Assembleur pour associer aux vues des comptes bancaires
@@ -32,7 +32,7 @@ public class AccountController {
     //private final AccountValidator accountValidator;
 
     /**
-     * Obtenir tous les comptes bancaires actifs.
+     * Obtenir tous les comptes bancaires.
      *
      * @return CollectionModel<EntityModel<AccountView>>    Collection de compte bancaire.
      */
@@ -42,7 +42,7 @@ public class AccountController {
     }
 
     /**
-     * Obtenir un compte bancaire actif.
+     * Obtenir un compte bancaire.
      *
      * @param id                            Identifiant du compte bancaire cherché.
      * @return EntityModel<AccountView>     Vue sur le compte bancaire.
@@ -66,9 +66,9 @@ public class AccountController {
     }
 
     /**
-     * Mettre à jour les informations d'un compte bancaire actif
-     * pouvant être modifier : nom, prénom, numéro de passeport,
-     * date de naissance, et IBAN.
+     * Mettre à jour les informations d'un compte bancaire pouvant
+     * être modifier : nom, prénom, numéro de passeport, date de
+     * naissance, et IBAN.
      *
      * @param id                            Identifiant du compte bancaire à modifier.
      * @param input                         Informations modifiées du compte.
@@ -82,11 +82,11 @@ public class AccountController {
 
     /**
      * Mettre à jour uniquement certaines informations d'un compte
-     * bancaire actif pouvant être modifier : nom, et/ou prénom,
-     * et/ou numéro de passeport, et/ou date de naissance, et/ou IBAN.
-     *<
+     * bancaire pouvant être modifier : nom, et/ou prénom, et/ou
+     * numéro de passeport, et/ou date de naissance, et/ou IBAN.
+     *
      * @param id                            Identifiant du compte bancaire à modifier.
-     * @param input                         Informations modifiées du compte bacnaire.
+     * @param input                         Informations modifiées du compte bancaire.
      * @return EntityModel<AccountView>     Vue sur le compte bancaire modifié.
      */
     @PatchMapping(value = "{id}")
@@ -96,7 +96,7 @@ public class AccountController {
     }
 
     /**
-     * Supprimer un compte bancaire actif.
+     * Supprimer un compte bancaire.
      *
      * @param id    Identifiant du compte bancaire à supprimer.
      */

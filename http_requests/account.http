@@ -30,6 +30,7 @@ Content-Type: application/json
   "passportNumber": "9999480076",
   "iban": "FR9930001007941234567890185"
 }
+
 ###
 PUT http://localhost:8090/accounts/5d707d00-945f-4c7c-ba02-e80ce826a2a2
 Content-Type: application/json
@@ -64,4 +65,4 @@ Content-Type: application/json
 DELETE http://localhost:8090/accounts/5d707d00-945f-4c7c-ba02-e80ce826a2ad
 
 ###
-DELETE http://localhost:8090/accounts/5d707d00-945f-4c7c-ba02-e80ce826a2ae
+DELETE http://localhost:8090/accounts/5d707d00-945f-4c7c-ba02-e80ce826a2a2
