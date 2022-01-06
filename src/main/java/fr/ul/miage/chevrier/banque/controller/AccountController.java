@@ -53,7 +53,7 @@ public class AccountController {
      */
     @GetMapping(value = "{id}")
     public EntityModel<AccountView> find(@PathVariable("id") UUID id) {
-        return accountAssembler.toModel(accountService.findById(id));
+        return accountAssembler.toModel(accountService.find(id));
     }
 
     /**
@@ -108,6 +108,6 @@ public class AccountController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
     public void delete(@PathVariable("id") UUID id) {
-        accountService.deleteById(id);
+        accountService.delete(id);
     }
 }

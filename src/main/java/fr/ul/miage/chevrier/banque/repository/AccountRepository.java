@@ -23,7 +23,7 @@ public interface AccountRepository extends CrudRepository<Account, UUID> {
     @Query(value = "SELECT a " +
                    "FROM Account a " +
                    "WHERE a.active = true")
-    List<Account> findAllActive();
+    List<Account> findAll();
 
     /**
      * Chercher tous les comptes bancaires actifs
@@ -40,7 +40,7 @@ public interface AccountRepository extends CrudRepository<Account, UUID> {
                     "LIMIT (:interval) " +
                     "OFFSET (:offset)",
             nativeQuery = true)
-    List<Account> findAllActiveWithPagination(Integer interval, Integer offset);
+    List<Account> findAll(@Param("interval") Integer interval, @Param("offset") Integer offset);
 
     /**
      * Chercher un compte bancaire actif en précisant son identifiant.
@@ -52,5 +52,16 @@ public interface AccountRepository extends CrudRepository<Account, UUID> {
                    "FROM Account a " +
                    "WHERE a.id = (:id) " +
                    "AND a.active = true")
-    Optional<Account> findActiveById(@Param("id") UUID id);
+    Optional<Account> find(@Param("id") UUID id);
+
+    /**
+     * Supprimer un compte bancaire en précisant son identifiant,
+     * en le passant à inactif.
+     *
+     * @param id                        Identifiant du compte bancaire à supprimer.
+     */
+    @Query(value = "UPDATE Account " +
+                    "SET active = false " +
+                    "WHERE id = (:id)")
+    void delete(@Param("id") UUID id);
 }

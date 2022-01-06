@@ -28,7 +28,7 @@ public class AccountService {
      * @return List<AccountView>        Collection de compte bancaire.
      */
     public List<AccountView> findAll(Integer interval, Integer offset) {
-        return accountMapper.toDto(accountRepository.findAllActiveWithPagination(interval, offset));
+        return accountMapper.toDto(accountRepository.findAll(interval, offset));
     }
 
     /**
@@ -37,8 +37,8 @@ public class AccountService {
      * @param id                Identifiant du compte bancaire cherché.
      * @return AccountView      Vue sur le compte bancaire.
      */
-    public AccountView findById(UUID id) {
-        return accountMapper.toDto(accountRepository.findActiveById(id).orElseThrow(() -> AccountNotFoundException.of(id)));
+    public AccountView find(UUID id) {
+        return accountMapper.toDto(accountRepository.find(id).orElseThrow(() -> AccountNotFoundException.of(id)));
     }
 
     /**
@@ -66,7 +66,7 @@ public class AccountService {
      * @return AccountView     Vue sur le compte bancaire modifié.
      */
     public AccountView update(UUID id, AccountInput input) {
-        var account = accountRepository.findActiveById(id)
+        var account = accountRepository.find(id)
                                                 .orElseThrow(() -> AccountNotFoundException.of(id));
         account.setFirstName(input.getFirstName());
         account.setLastName(input.getLastName());
@@ -87,7 +87,7 @@ public class AccountService {
      * @return AccountView     Vue sur le compte bancaire modifié.
      */
     public AccountView updatePartial(UUID id, AccountInput input) {
-        var account = accountRepository.findActiveById(id)
+        var account = accountRepository.find(id)
                                                 .orElseThrow(() -> AccountNotFoundException.of(id));
         if(input.getFirstName() != null) {
             account.setFirstName(input.getFirstName());
@@ -114,10 +114,7 @@ public class AccountService {
      *
      * @param id        Identifiant du compte bancaire à supprimer.
      */
-    public void deleteById(UUID id) {
-       accountRepository.findActiveById(id).ifPresent(account -> {
-            account.setActive(false);
-            accountRepository.save(account);
-       });
+    public void delete(UUID id) {
+        accountRepository.delete(id);
     }
 }
