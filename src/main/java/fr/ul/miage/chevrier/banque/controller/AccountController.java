@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.util.UUID;
 
 /**
@@ -65,7 +66,7 @@ public class AccountController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
-    public EntityModel<AccountView> create(@RequestBody AccountInput input) {
+    public EntityModel<AccountView> create(@RequestBody @Valid AccountInput input) {
         return accountAssembler.toModel(accountService.create(input));
     }
 
@@ -80,7 +81,7 @@ public class AccountController {
      */
     @PutMapping(value = "{id}")
     @Transactional
-    public EntityModel<AccountView> update(@PathVariable("id") UUID id, @RequestBody AccountInput input) {
+    public EntityModel<AccountView> update(@PathVariable("id") UUID id, @RequestBody @Valid AccountInput input) {
         return accountAssembler.toModel(accountService.update(id, input));
     }
 

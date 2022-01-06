@@ -12,11 +12,15 @@ import java.util.UUID;
 @AllArgsConstructor
 public class AccountView {
     private UUID id;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "UTC")
     private Date dateAdded;
+
     private String firstName;
+
     private String lastName;
+
     private String IBAN;
+
     private Double balance;
-    //TODO Pas de birthdate, ni de passportNumber ?
 }
