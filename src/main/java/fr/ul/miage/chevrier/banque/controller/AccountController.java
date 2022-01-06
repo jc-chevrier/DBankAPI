@@ -3,7 +3,10 @@ package fr.ul.miage.chevrier.banque.controller;
 import fr.ul.miage.chevrier.banque.assembler.AccountAssembler;
 import fr.ul.miage.chevrier.banque.dto.AccountInput;
 import fr.ul.miage.chevrier.banque.dto.AccountView;
-import fr.ul.miage.chevrier.banque.service.AccountService;
+import fr.ul.miage.chevrier.banque.exception.AccountNotFoundException;
+import fr.ul.miage.chevrier.banque.mapper.AccountMapper;
+import fr.ul.miage.chevrier.banque.repository.AccountRepository;
+import fr.ul.miage.chevrier.banque.validator.AccountValidator;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -22,15 +25,17 @@ import java.util.UUID;
 @RequestMapping(value = "accounts", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 public class AccountController {
-    //Service pour la couche métier de la gestion des
-    //comptes bancaires.
-    private final AccountService accountService;
+    //Répertoire pour l'interrogation des comptes bancaires
+    //en base de données.
+    private final AccountRepository accountRepository;
+    ///Mapper entité <-> vue (DTO) pour les comptes bancaires.
+    private final AccountMapper accountMapper;
     //Assembleur pour associer aux vues des comptes bancaires
     //des liens d'actions sur l'API (HATEOAS).
     private final AccountAssembler accountAssembler;
     //Validateur pour assurer la cohérence et l'intégrité des
     //comptes bancaires gérés.
-    //private final AccountValidator accountValidator;
+    private final AccountValidator accountValidator;
 
     /**
      * Obtenir tous les comptes bancaires.
@@ -43,31 +48,52 @@ public class AccountController {
     public CollectionModel<EntityModel<AccountView>> findAll(
             @RequestParam(required = false, name = "interval", defaultValue = "20") Integer interval,
             @RequestParam(required = false, name = "offset", defaultValue = "0") Integer offset) {
-        return accountAssembler.toCollectionModel(accountService.findAll(interval, offset));
+        //Recherche des entités.
+        var accounts =  accountRepository.findAll(interval, offset);
+
+        //Transformation de l'entité en vue puis ajout des liens d'actions.
+        return accountAssembler.toCollectionModel(accountMapper.toDTO(accounts));
     }
 
     /**
      * Obtenir un compte bancaire.
      *
-     * @param id                            Identifiant du compte bancaire cherché.
+     * @param accountId                     Identifiant du compte bancaire cherché.
      * @return EntityModel<AccountView>     Vue sur le compte bancaire.
      */
-    @GetMapping(value = "{id}")
-    public EntityModel<AccountView> find(@PathVariable("id") UUID id) {
-        return accountAssembler.toModel(accountService.find(id));
+    @GetMapping(value = "{accountId}")
+    public EntityModel<AccountView> find(@PathVariable("accountId") UUID accountId) {
+        //Recherche de l'entité et levée d'une exception si l'entité n'est pas trouvée.
+        var account =  accountRepository.find(accountId).orElseThrow(() -> AccountNotFoundException.of(accountId));
+
+        //Transformation de l'entité en vue puis ajout des liens d'actions.
+        return accountAssembler.toModel(accountMapper.toDTO(account));
     }
 
     /**
      * Créer un nouveau compte bancaire.
      *
-     * @param input                         Informations saisies du compte bancaire à créer.
+     * @param accountInput                  Informations saisies du compte bancaire à créer.
      * @return EntityModel<AccountView>     Vue sur le compte bancaire créé.
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
-    public EntityModel<AccountView> create(@RequestBody @Valid AccountInput input) {
-        return accountAssembler.toModel(accountService.create(input));
+    public EntityModel<AccountView> create(@RequestBody @Valid AccountInput accountInput) {
+        ///Création de la nouvelle entité.
+        var account = accountMapper.toEntity(accountInput);
+
+        //Génération de l'identifiant de l'entité.
+        account.setId(UUID.randomUUID());
+
+        //Génération du token.
+        account.setSecret("secret");//TODO à revoir pour authentification.
+
+        //Sauvegarde de la nouvelle entité.
+        account = accountRepository.save(account);
+
+        //Transformation de l'entité en vue puis ajout des liens d'actions.
+        return accountAssembler.toModel(accountMapper.toDTO(account));
     }
 
     /**
@@ -75,14 +101,30 @@ public class AccountController {
      * être modifié : nom, prénom, numéro de passeport, date de
      * naissance, et IBAN.
      *
-     * @param id                            Identifiant du compte bancaire à modifier.
-     * @param input                         Informations modifiées du compte.
+     * @param accountId                     Identifiant du compte bancaire à modifier.
+     * @param accountInput                  Informations modifiées du compte.
      * @return EntityModel<AccountView>     Vue sur le compte bancaire modifié.
      */
-    @PutMapping(value = "{id}")
+    @PutMapping(value = "{accountId}")
     @Transactional
-    public EntityModel<AccountView> update(@PathVariable("id") UUID id, @RequestBody @Valid AccountInput input) {
-        return accountAssembler.toModel(accountService.update(id, input));
+    public EntityModel<AccountView> update(@PathVariable("accountId") UUID accountId,
+                                           @RequestBody @Valid AccountInput accountInput) {
+        //Recherche de l'entité et levée d'une exception si l'entité n'est pas trouvée.
+        var account = accountRepository.find(accountId)
+                                                .orElseThrow(() -> AccountNotFoundException.of(accountId));
+
+        //Récupération des données saisies.
+        account.setFirstName(accountInput.getFirstName());
+        account.setLastName(accountInput.getLastName());
+        account.setBirthDate(accountInput.getBirthDate());
+        account.setPassportNumber(accountInput.getPassportNumber());
+        account.setIBAN(accountInput.getIBAN());
+
+        //Sauvegarde des modifications.
+        account = accountRepository.save(account);
+
+        //Transformation de l'entité en vue puis ajout des liens d'actions.
+        return accountAssembler.toModel(accountMapper.toDTO(account));
     }
 
     /**
@@ -90,25 +132,56 @@ public class AccountController {
      * bancaire pouvant être modifié : nom, et/ou prénom, et/ou
      * numéro de passeport, et/ou date de naissance, et/ou IBAN.
      *
-     * @param id                            Identifiant du compte bancaire à modifier.
-     * @param input                         Informations modifiées du compte bancaire.
+     * @param accountId                     Identifiant du compte bancaire à modifier.
+     * @param accountInput                  Informations modifiées du compte bancaire.
      * @return EntityModel<AccountView>     Vue sur le compte bancaire modifié.
      */
-    @PatchMapping(value = "{id}")
+    @PatchMapping(value = "{accountId}")
     @Transactional
-    public EntityModel<AccountView> updatePartial(@PathVariable("id") UUID id, @RequestBody AccountInput input) {
-        return accountAssembler.toModel(accountService.updatePartial(id, input));
+    public EntityModel<AccountView> updatePartial(@PathVariable("accountId") UUID accountId,
+                                                  @RequestBody AccountInput accountInput) {
+        //Recherche de l'entité et levée d'une exception si l'entité n'est pas trouvée.
+        var account = accountRepository.find(accountId)
+                                                .orElseThrow(() -> AccountNotFoundException.of(accountId));
+
+        //Récupération des données saisies.
+        if(accountInput.getFirstName() != null) {
+            account.setFirstName(accountInput.getFirstName());
+        }
+        if(accountInput.getLastName() != null) {
+            account.setLastName(accountInput.getLastName());
+        }
+        if(accountInput.getBirthDate() != null) {
+            account.setBirthDate(accountInput.getBirthDate());
+        }
+        if(accountInput.getPassportNumber() != null) {
+            account.setPassportNumber(accountInput.getPassportNumber());
+        }
+        if(accountInput.getIBAN() != null) {
+            account.setIBAN(accountInput.getIBAN());
+        }
+
+        //Vérification des données saisies.
+        accountValidator.validate(new AccountInput(account.getFirstName(), account.getLastName(),
+        account.getBirthDate(), account.getPassportNumber(), account.getIBAN()));
+
+        //Sauvegarde des modifications.
+        account = accountRepository.save(account);
+
+        //Transformation de l'entité en vue puis ajout des liens d'actions.
+        return accountAssembler.toModel(accountMapper.toDTO(account));
     }
 
     /**
      * Supprimer un compte bancaire.
      *
-     * @param id    Identifiant du compte bancaire à supprimer.
+     * @param accountId    Identifiant du compte bancaire à supprimer.
      */
-    @DeleteMapping(value = "{id}")
+    @DeleteMapping(value = "{accountId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
-    public void delete(@PathVariable("id") UUID id) {
-        accountService.delete(id);
+    public void delete(@PathVariable("accountId") UUID accountId) {
+        //Passage de l'entité à inactive si elle est trouvée.
+        accountRepository.delete(accountId);
     }
 }

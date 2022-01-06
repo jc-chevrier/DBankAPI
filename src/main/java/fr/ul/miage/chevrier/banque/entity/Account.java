@@ -34,7 +34,7 @@ public class Account implements Serializable {
 
     private String IBAN;
 
-    private Double balance;
+    private Double balance = 0.0;
 
     private boolean active = true;
 }

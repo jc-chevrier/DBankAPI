@@ -11,17 +11,17 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface AccountMapper {
-    default List<AccountView> toDto(Page<Account> page) {
+    default List<AccountView> toDTO(Page<Account> page) {
         return page
-                .map(this::toDto)
+                .map(this::toDTO)
                 .getContent();
     }
 
-    AccountView toDto(Account account);
+    AccountView toDTO(Account account);
 
-    default List<AccountView> toDto(Iterable<Account> accounts) {
+    default List<AccountView> toDTO(Iterable<Account> accounts) {
         var accountsViews = new ArrayList<AccountView>();
-        accounts.forEach(account -> accountsViews.add(toDto(account)));//TODO à revoir.
+        accounts.forEach(account -> accountsViews.add(toDTO(account)));//TODO à revoir.
         return accountsViews;
     }
 
