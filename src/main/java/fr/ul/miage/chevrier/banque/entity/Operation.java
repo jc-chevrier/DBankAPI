@@ -1,12 +1,15 @@
 package fr.ul.miage.chevrier.banque.entity;
 
-import com.sun.istack.Nullable;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Entité pour les opérations sur les
+ * comptes bancaires.
+ */
 @Entity
 @Data
 @NoArgsConstructor
@@ -14,21 +17,28 @@ import java.util.UUID;
 public class Operation {
     @Id
     private UUID id;
-    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-    private Date dateAdded = new Date();
+
     private String label;
+
     private Double amount;
+
     @Column(name = "EXTERNAL_ACCOUNT_IBAN")
     private String externalAccountIBAN;
+
     private String externalAccountName;
+
     private String country;
-    @Nullable
+
     private Double rate;
-    private String direction;
-    @Nullable
+
     private String category;
-    private boolean active;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date dateAdded = new Date();
+
+    private boolean active = true;
+
     @OneToOne
-    @JoinColumn(name = "internal_account_id", referencedColumnName = "id")
+    @JoinColumn(name = "INTERNAL_ACCOUNT_ID", referencedColumnName = "id")
     private Account internalAccount;
 }

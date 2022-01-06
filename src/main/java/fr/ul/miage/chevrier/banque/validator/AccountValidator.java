@@ -7,6 +7,10 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import java.util.Set;
 
+/**
+ * Validateur pour les comptes bancaires
+ * des clients.
+ */
 @Service
 public class AccountValidator {
     private Validator validator;

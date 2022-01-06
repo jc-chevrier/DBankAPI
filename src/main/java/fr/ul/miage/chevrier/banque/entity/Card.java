@@ -10,6 +10,10 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Entité pour les cartes des comptes
+ * bancaires.
+ */
 @Entity
 @Data
 @NoArgsConstructor
@@ -17,18 +21,29 @@ import java.util.UUID;
 public class Card implements Serializable {
     @Id
     private UUID id;
-    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
-    private Date dateAdded = new Date();
+
     private String number;
+
     private String code;
+
     private String cryptogram;
+
     private Integer blocked;
+
     private Integer localization;
+
     private Integer contactless;
+
     private Double cap;
+
     private Integer virtual;
-    private boolean active;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date dateAdded = new Date();
+
+    private boolean active = true;
+
     @OneToOne
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @JoinColumn(name = "ACCOUNT_ID", referencedColumnName = "id")
     private Account account;
 }

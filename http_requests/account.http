@@ -23,7 +23,8 @@ Content-Type: application/json
 {
   "firstName": "léa",
   "lastName": "flavi",
-  "birthDate": "05/02/1986",
+  "birthDate": "1986-05-02",
+  "country":  "England",
   "passportNumber": "935480076",
   "iban": "EN5630001007941234567890185"
 }
@@ -35,7 +36,8 @@ Content-Type: application/json
 {
   "firstName": "louis",
   "lastName": "oliverus",
-  "birthDate": "09/09/1999",
+  "birthDate": "1999-09-09",
+  "country": "France",
   "passportNumber": "999948076",
   "iban": "FR9930001007941234567890185"
 }
@@ -47,7 +49,8 @@ Content-Type: application/json
 {
   "firstName": "louis",
   "lastName": "oliverus",
-  "birthDate": "09/09/1999",
+  "birthDate": "1999-09-09",
+  "country": "France",
   "passportNumber": "999948076",
   "iban": "FR9930001007941234567890185"
 }
@@ -68,8 +71,10 @@ PATCH http://localhost:8090/accounts/5d707d00-945f-4c7c-ba02-e80ce826a2a2
 Content-Type: application/json
 
 {
-  "firstName": "mariooo",
-  "lastName": "oliverus"
+  "firstName": "mariooooo",
+  "lastName": "oliveruuuus",
+  "passportNumber": "999948076",
+  "iban": "FR9930001007941234567890185"
 }
 
 ###

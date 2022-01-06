@@ -1,0 +1,18 @@
+###
+GET http://localhost:8090/operations
+
+###
+GET http://localhost:8090/operations/5d707d00-945f-4c7c-ba02-e80ce826a2a2
+
+###
+POST http://localhost:8090/operations
+Content-Type: application/json
+
+{
+  "label": "Achat DVD SNK",
+  "amount": 25.26,
+  "country" : "England",
+  "externalAccountIBAN": "EN9930001007941234567890185",
+  "externalAccountName": "FNAC",
+  "internalAccountId": "6856ef3f-7ac5-4f95-b31c-d7b3fb8b0004"
+}

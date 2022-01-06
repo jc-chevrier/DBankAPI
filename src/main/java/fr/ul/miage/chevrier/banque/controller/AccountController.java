@@ -28,7 +28,7 @@ public class AccountController {
     //Répertoire pour l'interrogation des comptes bancaires
     //en base de données.
     private final AccountRepository accountRepository;
-    ///Mapper entité <-> vue (DTO) pour les comptes bancaires.
+    ///Mapper entité <-> DTO (vue ou saisies) pour les comptes bancaires.
     private final AccountMapper accountMapper;
     //Assembleur pour associer aux vues des comptes bancaires
     //des liens d'actions sur l'API (HATEOAS).
@@ -40,9 +40,9 @@ public class AccountController {
     /**
      * Obtenir tous les comptes bancaires.
      *
-     * @param interval                                          Intervalle de pagination.
-     * @param offset                                            Indice de début de pagination.
-     * @return CollectionModel<EntityModel<AccountView>>        Collection de compte bancaire.
+     * @param interval                                      Intervalle de pagination.
+     * @param offset                                        Indice de début de pagination.
+     * @return CollectionModel<EntityModel<AccountView>>    Collection de compte bancaire.
      */
     @GetMapping
     public CollectionModel<EntityModel<AccountView>> findAll(
@@ -52,7 +52,7 @@ public class AccountController {
         var accounts =  accountRepository.findAll(interval, offset);
 
         //Transformation de l'entité en vue puis ajout des liens d'actions.
-        return accountAssembler.toCollectionModel(accountMapper.toDTO(accounts));
+        return accountAssembler.toCollectionModel(accountMapper.toView(accounts));
     }
 
     /**
@@ -67,7 +67,7 @@ public class AccountController {
         var account =  accountRepository.find(accountId).orElseThrow(() -> AccountNotFoundException.of(accountId));
 
         //Transformation de l'entité en vue puis ajout des liens d'actions.
-        return accountAssembler.toModel(accountMapper.toDTO(account));
+        return accountAssembler.toModel(accountMapper.toView(account));
     }
 
     /**
@@ -93,7 +93,7 @@ public class AccountController {
         account = accountRepository.save(account);
 
         //Transformation de l'entité en vue puis ajout des liens d'actions.
-        return accountAssembler.toModel(accountMapper.toDTO(account));
+        return accountAssembler.toModel(accountMapper.toView(account));
     }
 
     /**
@@ -124,7 +124,7 @@ public class AccountController {
         account = accountRepository.save(account);
 
         //Transformation de l'entité en vue puis ajout des liens d'actions.
-        return accountAssembler.toModel(accountMapper.toDTO(account));
+        return accountAssembler.toModel(accountMapper.toView(account));
     }
 
     /**
@@ -161,15 +161,16 @@ public class AccountController {
             account.setIBAN(accountInput.getIBAN());
         }
 
-        //Vérification des données saisies.
+        //Vérification des données saisies..
+        //TODO corriger problème : erreur 500 au lieu de 400
         accountValidator.validate(new AccountInput(account.getFirstName(), account.getLastName(),
-        account.getBirthDate(), account.getPassportNumber(), account.getIBAN()));
+        account.getBirthDate(), account.getCountry(), account.getPassportNumber(), account.getIBAN()));
 
         //Sauvegarde des modifications.
         account = accountRepository.save(account);
 
         //Transformation de l'entité en vue puis ajout des liens d'actions.
-        return accountAssembler.toModel(accountMapper.toDTO(account));
+        return accountAssembler.toModel(accountMapper.toView(account));
     }
 
     /**

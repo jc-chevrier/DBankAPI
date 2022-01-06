@@ -12,7 +12,7 @@ import java.util.UUID;
 
 /**
  * Répertoire pour l'interrogation de la base de
- * concernant les comptes bancaires.
+ * données concernant les comptes bancaires.
  */
 @Repository
 public interface AccountRepository extends CrudRepository<Account, UUID> {
