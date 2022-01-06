@@ -5,6 +5,12 @@ GET http://localhost:8090/accounts
 GET http://localhost:8090/accounts?offset=0&interval=0
 
 ###
+GET http://localhost:8090/accounts?offset=0&interval=1
+
+###
+GET http://localhost:8090/accounts?offset=1&interval=1
+
+###
 GET http://localhost:8090/accounts/5d707d00-945f-4c7c-ba02-e80ce826a2ad
 
 ###
@@ -51,8 +57,10 @@ PATCH http://localhost:8090/accounts/5d707d00-945f-4c7c-ba02-e80ce826a2ad
 Content-Type: application/json
 
 {
-  "firstName": "mariooo",
-  "lastName": "oliverus"
+  "firstName": "mariooooo",
+  "lastName": "oliveruuuus",
+  "passportNumber": "999948076",
+  "iban": "FR9930001007941234567890185"
 }
 
 ###

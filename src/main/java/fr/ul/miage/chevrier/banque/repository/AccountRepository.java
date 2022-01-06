@@ -1,5 +1,6 @@
 package fr.ul.miage.chevrier.banque.repository;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -45,23 +46,25 @@ public interface AccountRepository extends CrudRepository<Account, UUID> {
     /**
      * Chercher un compte bancaire actif en précisant son identifiant.
      *
-     * @param id                        Identifiant du compte bancaire actif cherché.
+     * @param accountId                 Identifiant du compte bancaire actif cherché.
      * @return Optional<Account>        Compte bancaire actif cherché.
      */
     @Query(value = "SELECT a " +
                    "FROM Account a " +
-                   "WHERE a.id = (:id) " +
+                   "WHERE a.id = (:accountId) " +
                    "AND a.active = true")
-    Optional<Account> find(@Param("id") UUID id);
+    Optional<Account> find(@Param("accountId") UUID accountId);
 
     /**
      * Supprimer un compte bancaire en précisant son identifiant,
      * en le passant à inactif.
      *
-     * @param id                        Identifiant du compte bancaire à supprimer.
+     * @param accountId         Identifiant du compte bancaire à supprimer.
      */
-    @Query(value = "UPDATE Account " +
-                    "SET active = false " +
-                    "WHERE id = (:id)")
-    void delete(@Param("id") UUID id);
+    @Modifying
+    @Query(value = "UPDATE ACCOUNT " +
+                   "SET ACTIVE = FALSE " +
+                   "WHERE ID = (:accountId)",
+            nativeQuery = true)
+    void delete(@Param("accountId") UUID accountId);
 }
