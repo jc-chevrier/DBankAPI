@@ -23,17 +23,19 @@ public class AccountService {
     /**
      * Chercher tous les comptes bancaires.
      *
-     * @return CollectionModel<EntityModel<AccountView>>    Collection de compte bancaire.
+     * @param interval                  Intervalle de pagination.
+     * @param offset                    Indice de début de pagination.
+     * @return List<AccountView>        Collection de compte bancaire.
      */
-    public List<AccountView> findAll() {//TODO filter actif
-        return accountMapper.toDto(accountRepository.findAllActive());
+    public List<AccountView> findAll(Integer interval, Integer offset) {
+        return accountMapper.toDto(accountRepository.findAllActiveWithPagination(interval, offset));
     }
 
     /**
      * Chercher un compte bancaire.
      *
-     * @param id                            Identifiant du compte bancaire cherché.
-     * @return EntityModel<AccountView>     Vue sur le compte bancaire.
+     * @param id                Identifiant du compte bancaire cherché.
+     * @return AccountView      Vue sur le compte bancaire.
      */
     public AccountView findById(UUID id) {
         return accountMapper.toDto(accountRepository.findActiveById(id).orElseThrow(() -> AccountNotFoundException.of(id)));
@@ -42,8 +44,8 @@ public class AccountService {
     /**
      * Créer un nouveau compte bancaire.
      *
-     * @param input                         Informations saisies du compte bancaire à créer.
-     * @return EntityModel<AccountView>     Vue sur le compte bancaire créé.
+     * @param input             Informations saisies du compte bancaire à créer.
+     * @return AccountView      Vue sur le compte bancaire créé.
      */
     public AccountView create(AccountInput input) {
         var account = accountMapper.toEntity(input);
@@ -56,12 +58,12 @@ public class AccountService {
 
     /**
      * Mettre à jour les informations d'un compte bancaire pouvant
-     * être modifier : nom, prénom, numéro de passeport, date de
+     * être modifié : nom, prénom, numéro de passeport, date de
      * naissance, et IBAN.
      *
-     * @param id                            Identifiant du compte bancaire à modifier.
-     * @param input                         Informations modifiées du compte.
-     * @return EntityModel<AccountView>     Vue sur le compte bancaire modifié.
+     * @param id               Identifiant du compte bancaire à modifier.
+     * @param input            Informations modifiées du compte.
+     * @return AccountView     Vue sur le compte bancaire modifié.
      */
     public AccountView update(UUID id, AccountInput input) {
         var account = accountRepository.findActiveById(id)
@@ -77,12 +79,12 @@ public class AccountService {
 
     /**
      * Mettre à jour uniquement certaines informations d'un compte
-     * bancaire pouvant être modifier : nom, et/ou prénom, et/ou
+     * bancaire pouvant être modifié : nom, et/ou prénom, et/ou
      * numéro de passeport, et/ou date de naissance, et/ou IBAN.
      *
-     * @param id                            Identifiant du compte bancaire à modifier.
-     * @param input                         Informations modifiées du compte bancaire.
-     * @return EntityModel<AccountView>     Vue sur le compte bancaire modifié.
+     * @param id               Identifiant du compte bancaire à modifier.
+     * @param input            Informations modifiées du compte bancaire.
+     * @return AccountView     Vue sur le compte bancaire modifié.
      */
     public AccountView updatePartial(UUID id, AccountInput input) {
         var account = accountRepository.findActiveById(id)
@@ -110,7 +112,7 @@ public class AccountService {
      * Supprimer un compte bancaire, c'est-à-dire le
      * rendre inactif.
      *
-     * @param id        Identifiant du compte bancaire.
+     * @param id        Identifiant du compte bancaire à supprimer.
      */
     public void deleteById(UUID id) {
        accountRepository.findActiveById(id).ifPresent(account -> {

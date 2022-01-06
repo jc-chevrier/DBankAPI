@@ -34,11 +34,15 @@ public class AccountController {
     /**
      * Obtenir tous les comptes bancaires.
      *
-     * @return CollectionModel<EntityModel<AccountView>>    Collection de compte bancaire.
+     * @param interval                                          Intervalle de pagination.
+     * @param offset                                            Indice de début de pagination.
+     * @return CollectionModel<EntityModel<AccountView>>        Collection de compte bancaire.
      */
     @GetMapping
-    public CollectionModel<EntityModel<AccountView>> findAll() {
-        return accountAssembler.toCollectionModel(accountService.findAll());
+    public CollectionModel<EntityModel<AccountView>> findAll(
+            @RequestParam(required = false, name = "interval", defaultValue = "20") Integer interval,
+            @RequestParam(required = false, name = "offset", defaultValue = "0") Integer offset) {
+        return accountAssembler.toCollectionModel(accountService.findAll(interval, offset));
     }
 
     /**
@@ -67,7 +71,7 @@ public class AccountController {
 
     /**
      * Mettre à jour les informations d'un compte bancaire pouvant
-     * être modifier : nom, prénom, numéro de passeport, date de
+     * être modifié : nom, prénom, numéro de passeport, date de
      * naissance, et IBAN.
      *
      * @param id                            Identifiant du compte bancaire à modifier.
@@ -82,7 +86,7 @@ public class AccountController {
 
     /**
      * Mettre à jour uniquement certaines informations d'un compte
-     * bancaire pouvant être modifier : nom, et/ou prénom, et/ou
+     * bancaire pouvant être modifié : nom, et/ou prénom, et/ou
      * numéro de passeport, et/ou date de naissance, et/ou IBAN.
      *
      * @param id                            Identifiant du compte bancaire à modifier.

@@ -20,8 +20,27 @@ public interface AccountRepository extends CrudRepository<Account, UUID> {
      *
      * @return List<Account>            Comptes bancaires actifs trouvés.
      */
-    @Query("SELECT a FROM Account a WHERE a.active = true")
+    @Query(value = "SELECT a " +
+                   "FROM Account a " +
+                   "WHERE a.active = true")
     List<Account> findAllActive();
+
+    /**
+     * Chercher tous les comptes bancaires actifs
+     * avec un système de pagination.
+     *
+     *
+     * @param interval              Intervalle de pagination.
+     * @param offset                Indice de début de pagination.
+     * @return List<Account>        Comptes bancaires actifs trouvés.
+     */
+    @Query(value = "SELECT * " +
+                    "FROM ACCOUNT " +
+                    "WHERE ACTIVE = TRUE " +
+                    "LIMIT (:interval) " +
+                    "OFFSET (:offset)",
+            nativeQuery = true)
+    List<Account> findAllActiveWithPagination(Integer interval, Integer offset);
 
     /**
      * Chercher un compte bancaire actif en précisant son identifiant.
@@ -29,6 +48,9 @@ public interface AccountRepository extends CrudRepository<Account, UUID> {
      * @param id                        Identifiant du compte bancaire actif cherché.
      * @return Optional<Account>        Compte bancaire actif cherché.
      */
-    @Query("SELECT a FROM Account a WHERE a.id = (:id) AND a.active = true")
+    @Query(value = "SELECT a " +
+                   "FROM Account a " +
+                   "WHERE a.id = (:id) " +
+                   "AND a.active = true")
     Optional<Account> findActiveById(@Param("id") UUID id);
 }

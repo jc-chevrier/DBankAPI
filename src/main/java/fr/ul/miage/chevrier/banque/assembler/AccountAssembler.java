@@ -18,7 +18,7 @@ public class AccountAssembler implements RepresentationModelAssembler<AccountVie
     @Override
     public EntityModel<AccountView> toModel(AccountView accountView) {
         return EntityModel.of(accountView,
-                              linkTo(methodOn(AccountController.class).findAll()).withRel("collection"),
+                              linkTo(methodOn(AccountController.class).findAll(20, 0)).withRel("collection"),
                               linkTo(methodOn(AccountController.class).find(accountView.getId())).withSelfRel());
     }
 
@@ -27,6 +27,6 @@ public class AccountAssembler implements RepresentationModelAssembler<AccountVie
         List<EntityModel<AccountView>> accountModel = StreamSupport.stream(accountsViews.spliterator(), false)
                                                                     .map(this::toModel)
                                                                     .collect(Collectors.toList());
-        return CollectionModel.of(accountModel, linkTo(methodOn(AccountController.class).findAll()).withSelfRel());
+        return CollectionModel.of(accountModel, linkTo(methodOn(AccountController.class).findAll(20, 0)).withSelfRel());
     }
 }
