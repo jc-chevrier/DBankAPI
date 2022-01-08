@@ -22,16 +22,18 @@ public class Operation {
 
     private Double amount;
 
+    private String externalAccountName;
+
     @Column(name = "EXTERNAL_ACCOUNT_IBAN")
     private String externalAccountIBAN;
-
-    private String externalAccountName;
 
     private String country;
 
     private Double rate;
 
     private String category;
+
+    private boolean confirmed = false;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date dateAdded = new Date();

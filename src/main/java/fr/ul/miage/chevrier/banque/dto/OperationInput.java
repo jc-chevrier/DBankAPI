@@ -10,8 +10,8 @@ import javax.validation.constraints.Size;
 import java.util.UUID;
 
 /**
- * Classe pour les saisies des champs des opérations
- * sur les comptes bancaires (DTO).
+ * Classe pour les saisies des champs des
+ * opérations sur les comptes bancaires (DTO).
  */
 @Data
 @NoArgsConstructor
@@ -24,12 +24,12 @@ public class OperationInput {
     private Double amount;
 
     @NotBlank
+    private String externalAccountName;
+
+    @NotBlank
     @Size(min = 15, max = 34)
     @Pattern(regexp = "^[A-Z]{2}[0-9]{13,32}$")
     private String externalAccountIBAN;
-
-    @NotBlank
-    private String externalAccountName;
 
     @NotBlank
     private String country;

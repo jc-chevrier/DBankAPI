@@ -32,9 +32,9 @@ public class OperationView {
 
     private Double amount;
 
-    private String externalAccountIBAN;
-
     private String externalAccountName;
+
+    private String externalAccountIBAN;
 
     private String country;
 

@@ -66,7 +66,8 @@ public interface OperationRepository extends CrudRepository<Operation, UUID> {
     @Modifying
     @Query(value = "UPDATE OPERATION " +
                    "SET ACTIVE = FALSE " +
-                   "WHERE ID = (:operationId)",
+                   "WHERE ID = (:operationId) " +
+                   "AND CONFIRMED = FALSE",
             nativeQuery = true)
     void delete(@Param("operationId") UUID operationId);
 }

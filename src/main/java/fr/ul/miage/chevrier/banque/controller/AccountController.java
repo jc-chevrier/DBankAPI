@@ -28,7 +28,7 @@ public class AccountController {
     //Répertoire pour l'interrogation des comptes bancaires
     //en base de données.
     private final AccountRepository accountRepository;
-    ///Mapper entité <-> DTO (vue ou saisies) pour les comptes bancaires.
+    ///Mapper entité <-> vue ou saisies (DTO) pour les comptes bancaires.
     private final AccountMapper accountMapper;
     //Assembleur pour associer aux vues des comptes bancaires
     //des liens d'actions sur l'API (HATEOAS).
@@ -48,10 +48,10 @@ public class AccountController {
     public CollectionModel<EntityModel<AccountView>> findAll(
             @RequestParam(required = false, name = "interval", defaultValue = "20") Integer interval,
             @RequestParam(required = false, name = "offset", defaultValue = "0") Integer offset) {
-        //Recherche des entités.
+        //Recherche des comptes.
         var accounts =  accountRepository.findAll(interval, offset);
 
-        //Transformation de l'entité en vue puis ajout des liens d'actions.
+        //Transformation des entités comptes en vues puis ajout des liens d'actions.
         return accountAssembler.toCollectionModel(accountMapper.toView(accounts));
     }
 
@@ -63,10 +63,10 @@ public class AccountController {
      */
     @GetMapping(value = "{accountId}")
     public EntityModel<AccountView> find(@PathVariable("accountId") UUID accountId) {
-        //Recherche de l'entité et levée d'une exception si l'entité n'est pas trouvée.
+        //Recherche du compte et levée d'une exception si le compte n'est pas trouvé.
         var account =  accountRepository.find(accountId).orElseThrow(() -> AccountNotFoundException.of(accountId));
 
-        //Transformation de l'entité en vue puis ajout des liens d'actions.
+        //Transformation de l'entité compte en vue puis ajout des liens d'actions.
         return accountAssembler.toModel(accountMapper.toView(account));
     }
 
@@ -80,19 +80,19 @@ public class AccountController {
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
     public EntityModel<AccountView> create(@RequestBody @Valid AccountInput accountInput) {
-        ///Création de la nouvelle entité.
+        ///Création du nouveau compte.
         var account = accountMapper.toEntity(accountInput);
 
-        //Génération de l'identifiant de l'entité.
+        //Génération de l'identifiant du compte.
         account.setId(UUID.randomUUID());
 
-        //Génération du token.
+        //Génération du token du compte (sécurité).
         account.setSecret("secret");//TODO à revoir pour authentification.
 
-        //Sauvegarde de la nouvelle entité.
+        //Sauvegarde du nouveau compte.
         account = accountRepository.save(account);
 
-        //Transformation de l'entité en vue puis ajout des liens d'actions.
+        //Transformation de l'entité compte en vue puis ajout des liens d'actions.
         return accountAssembler.toModel(accountMapper.toView(account));
     }
 
@@ -109,7 +109,7 @@ public class AccountController {
     @Transactional
     public EntityModel<AccountView> update(@PathVariable("accountId") UUID accountId,
                                            @RequestBody @Valid AccountInput accountInput) {
-        //Recherche de l'entité et levée d'une exception si l'entité n'est pas trouvée.
+        //Recherche du compte et levée d'une exception si le compte n'est pas trouvé.
         var account = accountRepository.find(accountId)
                                                 .orElseThrow(() -> AccountNotFoundException.of(accountId));
 
@@ -123,7 +123,7 @@ public class AccountController {
         //Sauvegarde des modifications.
         account = accountRepository.save(account);
 
-        //Transformation de l'entité en vue puis ajout des liens d'actions.
+        //Transformation de l'entité compte en vue puis ajout des liens d'actions.
         return accountAssembler.toModel(accountMapper.toView(account));
     }
 
@@ -140,7 +140,7 @@ public class AccountController {
     @Transactional
     public EntityModel<AccountView> updatePartial(@PathVariable("accountId") UUID accountId,
                                                   @RequestBody AccountInput accountInput) {
-        //Recherche de l'entité et levée d'une exception si l'entité n'est pas trouvée.
+        //Recherche du compte et levée d'une exception si le compte n'est pas trouvé.
         var account = accountRepository.find(accountId)
                                                 .orElseThrow(() -> AccountNotFoundException.of(accountId));
 
@@ -169,7 +169,7 @@ public class AccountController {
         //Sauvegarde des modifications.
         account = accountRepository.save(account);
 
-        //Transformation de l'entité en vue puis ajout des liens d'actions.
+        //Transformation de l'entité compte en vue puis ajout des liens d'actions.
         return accountAssembler.toModel(accountMapper.toView(account));
     }
 
@@ -182,7 +182,7 @@ public class AccountController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
     public void delete(@PathVariable("accountId") UUID accountId) {
-        //Passage de l'entité à inactive si elle est trouvée.
+        //Passage du compte à inactif si il est trouvé.
         accountRepository.delete(accountId);
     }
 }
