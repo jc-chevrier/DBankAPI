@@ -35,7 +35,7 @@ public class AccountInput {
     private String passportNumber;
 
     @NotBlank
-    @Size(min = 27, max = 27)
-    @Pattern(regexp = "^[A-Z]{2}[0-9]{25}$")
+    @Size(min = 15, max = 34)
+    @Pattern(regexp = "^[A-Z]{2}[0-9]{13,32}$")
     private String IBAN;
 }

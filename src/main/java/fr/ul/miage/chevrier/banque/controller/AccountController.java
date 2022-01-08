@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.util.UUID;
 
@@ -116,6 +117,7 @@ public class AccountController {
         //Récupération des données saisies.
         account.setFirstName(accountInput.getFirstName());
         account.setLastName(accountInput.getLastName());
+        account.setCountry(accountInput.getCountry());
         account.setBirthDate(accountInput.getBirthDate());
         account.setPassportNumber(accountInput.getPassportNumber());
         account.setIBAN(accountInput.getIBAN());
@@ -150,6 +152,9 @@ public class AccountController {
         }
         if(accountInput.getLastName() != null) {
             account.setLastName(accountInput.getLastName());
+        }
+        if(accountInput.getCountry() != null) {
+            account.setCountry(accountInput.getCountry());
         }
         if(accountInput.getBirthDate() != null) {
             account.setBirthDate(accountInput.getBirthDate());
