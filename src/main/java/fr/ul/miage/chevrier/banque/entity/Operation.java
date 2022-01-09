@@ -22,12 +22,12 @@ public class Operation {
 
     private Double amount;
 
-    private String externalAccountName;
+    private String secondAccountName;
 
-    @Column(name = "EXTERNAL_ACCOUNT_IBAN")
-    private String externalAccountIBAN;
+    private String secondAccountCountry;
 
-    private String country;
+    @Column(name = "SECOND_ACCOUNT_IBAN")
+    private String secondAccountIBAN;
 
     private Double rate;
 
@@ -41,6 +41,10 @@ public class Operation {
     private boolean active = true;
 
     @OneToOne
-    @JoinColumn(name = "INTERNAL_ACCOUNT_ID", referencedColumnName = "id")
-    private Account internalAccount;
+    @JoinColumn(name = "FIRST_ACCOUNT_ID", referencedColumnName = "ID")
+    private Account firstAccount;
+
+    @OneToOne
+    @JoinColumn(name = "FIRST_ACCOUNT_CARD_ID", referencedColumnName = "ID")
+    private Card firstAccountCard;
 }

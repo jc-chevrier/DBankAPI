@@ -9,13 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Mapper entité <-> DTO (vue, saisies)
+ * Mapper entité <-> vue, saisies (DTO)
  * pour les opérations sur les comptes
  * bancaires des clients.
  */
 @Mapper(componentModel = "spring")
 public interface OperationMapper {
-    @Mapping(source = "internalAccount.id", target = "internalAccountId")
+    @Mapping(source = "firstAccount.id", target = "firstAccountId")
+    @Mapping(source = "firstAccountCard.id", target = "firstAccountCardId")
     OperationView toView(Operation operation);
 
     default List<OperationView> toView(Iterable<Operation> operations) {
@@ -28,6 +29,7 @@ public interface OperationMapper {
     @Mapping(target = "rate", ignore = true)
     @Mapping(target = "dateAdded", ignore = true)
     @Mapping(target = "active", ignore = true)
-    @Mapping(target = "internalAccount", ignore = true)
+    @Mapping(target = "firstAccount", ignore = true)
+    @Mapping(target = "firstAccountCard", ignore = true)
     Operation toEntity(OperationInput OperationInput);
 }

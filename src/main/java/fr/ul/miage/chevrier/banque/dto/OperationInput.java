@@ -3,10 +3,7 @@ package fr.ul.miage.chevrier.banque.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.UUID;
 
 /**
@@ -24,18 +21,20 @@ public class OperationInput {
     private Double amount;
 
     @NotBlank
-    private String externalAccountName;
+    private String secondAccountName;
+
+    @NotBlank
+    private String secondAccountCountry;
 
     @NotBlank
     @Size(min = 15, max = 34)
     @Pattern(regexp = "^[A-Z]{2}[0-9]{13,32}$")
-    private String externalAccountIBAN;
-
-    @NotBlank
-    private String country;
+    private String secondAccountIBAN;
 
     private String category;
 
     @NotNull
-    private UUID internalAccountId;
+    private UUID firstAccountId;
+
+    private UUID firstAccountCardId;
 }

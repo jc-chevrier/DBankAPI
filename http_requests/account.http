@@ -26,6 +26,7 @@ Content-Type: application/json
   "birthDate": "1986-05-02",
   "country":  "England",
   "passportNumber": "935480076",
+  "phoneNumber": "330447333789",
   "iban": "EN5630001007941234567890185"
 }
 

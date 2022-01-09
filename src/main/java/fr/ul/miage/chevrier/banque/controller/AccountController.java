@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.util.UUID;
 
@@ -120,6 +119,7 @@ public class AccountController {
         account.setCountry(accountInput.getCountry());
         account.setBirthDate(accountInput.getBirthDate());
         account.setPassportNumber(accountInput.getPassportNumber());
+        account.setPhoneNumber(accountInput.getPhoneNumber());
         account.setIBAN(accountInput.getIBAN());
 
         //Sauvegarde des modifications.
@@ -162,14 +162,16 @@ public class AccountController {
         if(accountInput.getPassportNumber() != null) {
             account.setPassportNumber(accountInput.getPassportNumber());
         }
+        if(accountInput.getPhoneNumber() != null) {
+            account.setPhoneNumber(accountInput.getPhoneNumber());
+        }
         if(accountInput.getIBAN() != null) {
             account.setIBAN(accountInput.getIBAN());
         }
 
-        //Vérification des données saisies..
-        //TODO corriger problème : erreur 500 au lieu de 400
+        //Vérification des données saisies.
         accountValidator.validate(new AccountInput(account.getFirstName(), account.getLastName(),
-        account.getBirthDate(), account.getCountry(), account.getPassportNumber(), account.getIBAN()));
+        account.getBirthDate(), account.getCountry(), account.getPassportNumber(), account.getPhoneNumber(), account.getIBAN()));
 
         //Sauvegarde des modifications.
         account = accountRepository.save(account);

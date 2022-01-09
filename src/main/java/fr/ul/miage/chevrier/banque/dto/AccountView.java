@@ -17,9 +17,6 @@ import java.util.UUID;
 public class AccountView {
     private UUID id;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
-    private Date dateAdded;
-
     private String firstName;
 
     private String lastName;
@@ -29,4 +26,7 @@ public class AccountView {
     private String IBAN;
 
     private Double balance;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
+    private Date dateAdded;
 }

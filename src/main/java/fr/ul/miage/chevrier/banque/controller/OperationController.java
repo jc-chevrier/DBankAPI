@@ -3,11 +3,11 @@ package fr.ul.miage.chevrier.banque.controller;
 import fr.ul.miage.chevrier.banque.assembler.OperationAssembler;
 import fr.ul.miage.chevrier.banque.dto.OperationInput;
 import fr.ul.miage.chevrier.banque.dto.OperationView;
-import fr.ul.miage.chevrier.banque.exception.AccountNotFoundException;
-import fr.ul.miage.chevrier.banque.exception.OperationConfirmedException;
-import fr.ul.miage.chevrier.banque.exception.OperationNotFoundException;
+import fr.ul.miage.chevrier.banque.entity.Card;
+import fr.ul.miage.chevrier.banque.exception.*;
 import fr.ul.miage.chevrier.banque.mapper.OperationMapper;
 import fr.ul.miage.chevrier.banque.repository.AccountRepository;
+import fr.ul.miage.chevrier.banque.repository.CardRepository;
 import fr.ul.miage.chevrier.banque.repository.OperationRepository;
 import fr.ul.miage.chevrier.banque.validator.OperationValidator;
 import lombok.AllArgsConstructor;
@@ -32,6 +32,9 @@ public class OperationController {
     //Répertoire pour l'interrogation des comptes bancaires
     //en base de données.
     private final AccountRepository accountRepository;
+    //Répertoire pour l'interrogation des cartes sur les
+    //comptes bancaires en base de données.
+    private final CardRepository cardRepository;
     //Répertoire pour l'interrogation des
     //opérations bancaires en base de données.
     private final OperationRepository operationRepository;
@@ -90,21 +93,38 @@ public class OperationController {
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
     public EntityModel<OperationView> create(@RequestBody @Valid OperationInput operationInput) {
+        //Type d'opération : via carte ou non ?
+        boolean operationIsACardPayment = operationInput.getFirstAccountCardId() != null;
+
         ///Création de la nouvelle opération à partir des saisies.
         var operation = operationMapper.toEntity(operationInput);
 
-        //Recherche du compte associé et levée d'une exception si le compte n'est pas trouvé.
-        var internalAccount = accountRepository.find(operationInput.getInternalAccountId())
-                                                        .orElseThrow(() -> AccountNotFoundException.of(operationInput.getInternalAccountId()));
+        //Recherche du premier compte associé et levée d'une exception si le compte n'est pas trouvé.
+        var firstAccount = accountRepository.find(operationInput.getFirstAccountId())
+                                                     .orElseThrow(() -> AccountNotFoundException.of(operationInput.getFirstAccountId()));
 
-        //TODO check pays opération
-        //TODO check paramètres carte
+        //Si l'opération est un paiement par carte.
+        //Recherche de la carte associée et levée d'une exception si la carte n'est pas trouvée.
+        Card firstAccountCard = null;
+        if(operationIsACardPayment) {
+            firstAccountCard = cardRepository.find(operationInput.getFirstAccountCardId())
+                                             .orElseThrow(() -> CardNotFoundException.of(operationInput.getFirstAccountCardId()));
+        }
 
         //Génération de l'identifiant de l'opération.
         operation.setId(UUID.randomUUID());
 
         //Association avec le compte.
-        operation.setInternalAccount(internalAccount);
+        operation.setFirstAccount(firstAccount);
+
+        //Association avec la carte.
+        //Si l'opération est un paiement par carte.
+        if(operationIsACardPayment) {
+            operation.setFirstAccountCard(firstAccountCard);
+        }
+
+        //TODO check pays opération
+        //TODO check paramètres carte
 
         //Sauvegarde de la nouvelle opération.
         operation = operationRepository.save(operation);
@@ -116,12 +136,12 @@ public class OperationController {
     /**
      * Confirmer une opération bancaire.
      *
-     * @param operationId                     Identifiant de l'opération bancaire à confimer.
+     * @param operationId                     Identifiant de l'opération bancaire à confirmer.
      * @return EntityModel<OperationView>     Vue sur l'opération bancaire confirmée.
      */
-    @PostMapping("/confirm/{operationId}")
+    @PostMapping("/{operationId}/confirm")
     @Transactional
-    public EntityModel<OperationView> confirm(@PathVariable("operationId") UUID operationId) {
+    public void confirm(@PathVariable("operationId") UUID operationId) {
         //Recherche de l'opération et levée d'une exception si l'opération n'est pas trouvée.
         var operation =  operationRepository.find(operationId)
                                                        .orElseThrow(() -> OperationNotFoundException.of(operationId));
@@ -130,14 +150,11 @@ public class OperationController {
         operation.setConfirmed(true);
 
         //Modification du solde du compte associé à l'opération.
-        operation.getInternalAccount().incrementBalance(operation.getAmount());
+        operation.getFirstAccount().incrementBalance(operation.getAmount());
 
         //Sauvegarde des modifications.
         operation = operationRepository.save(operation);
-        accountRepository.save(operation.getInternalAccount());
-
-        //Transformation de l'entité en vue puis ajout des liens d'actions.
-        return operationAssembler.toModel(operationMapper.toView(operation));
+        accountRepository.save(operation.getFirstAccount());
     }
 
     /**
@@ -162,24 +179,43 @@ public class OperationController {
         //Si l'opération a été confirmée.
         if (operation.isConfirmed()) {
             //Levée d'une exception.
-            throw OperationConfirmedException.of(operationId);
+            throw new OperationConfirmedException(operationId);
         } else {
+            //Type d'opération : via carte ou non ?
+            boolean operationIsACardPayment = operationInput.getFirstAccountCardId() != null;
+
             //Recherche de l'entité compte associée et levée d'une exception si l'entité n'est pas trouvée.
-            var internalAccount = accountRepository.find(operationInput.getInternalAccountId())
-                                                            .orElseThrow(() -> AccountNotFoundException.of(operationInput.getInternalAccountId()));
+            var firstAccount = accountRepository.find(operationInput.getFirstAccountId())
+                                                         .orElseThrow(() -> AccountNotFoundException.of(operationInput.getFirstAccountId()));
+
+            //Si l'opération est un paiement par carte.
+            //Recherche de la carte associée et levée d'une exception si la carte n'est pas trouvée.
+            Card firstAccountCard = null;
+            if(operationIsACardPayment) {
+                firstAccountCard = cardRepository.find(operationInput.getFirstAccountCardId())
+                                                 .orElseThrow(() -> CardNotFoundException.of(operationInput.getFirstAccountCardId()));
+            }
 
             //Récupération des données saisies.
             operation.setLabel(operationInput.getLabel());
             operation.setAmount(operationInput.getAmount());
-            operation.setExternalAccountName(operationInput.getExternalAccountName());
-            operation.setExternalAccountIBAN(operationInput.getExternalAccountIBAN());
-            operation.setCountry(operationInput.getCountry());
-            //TODO check pays opération
+            operation.setSecondAccountName(operationInput.getSecondAccountName());
+            operation.setSecondAccountCountry(operationInput.getSecondAccountCountry());
+            operation.setSecondAccountIBAN(operationInput.getSecondAccountIBAN());
             operation.setCategory(operationInput.getCategory());
 
             //Association avec le compte bancaire.
-            operation.setInternalAccount(internalAccount);
+            operation.setFirstAccount(firstAccount);
 
+            //Association avec la carte.
+            //Si l'opération est un paiement par carte.
+            if(operationIsACardPayment) {
+                operation.setFirstAccountCard(firstAccountCard);
+            } else {
+                operation.setFirstAccountCard(null);
+            }
+
+            //TODO check pays opération
             //TODO check paramètres carte
 
             //Sauvegarde des modifications.
@@ -214,17 +250,13 @@ public class OperationController {
         //été modifié, et que l'opération a été confirmée.
         if((operationInput.getLabel() != null
            || operationInput.getAmount() != null
-           || operationInput.getExternalAccountName() != null
-           || operationInput.getExternalAccountIBAN() != null
-           || operationInput.getCountry() != null)
+           || operationInput.getSecondAccountName() != null
+           || operationInput.getSecondAccountIBAN() != null
+           || operationInput.getSecondAccountCountry() != null)
            && operation.isConfirmed()) {
                 //Levée d'une exception.
-                throw OperationConfirmedException.of(operationId);
+                throw new OperationConfirmedException(operationId);
         }
-
-        //Recherche du compte associé et levée d'une exception si le compte n'est pas trouvé.
-        var internalAccount = accountRepository.find(operationInput.getInternalAccountId())
-                                                        .orElseThrow(() -> AccountNotFoundException.of(operationInput.getInternalAccountId()));
 
         //Récupération des données saisies.
         if(operationInput.getLabel() != null) {
@@ -233,30 +265,39 @@ public class OperationController {
         if(operationInput.getAmount() != null) {
             operation.setAmount(operationInput.getAmount());
         }
-        if(operationInput.getExternalAccountName() != null) {
-            operation.setExternalAccountName(operationInput.getExternalAccountName());
+        if(operationInput.getSecondAccountName() != null) {
+            operation.setSecondAccountName(operationInput.getSecondAccountName());
         }
-        if(operationInput.getExternalAccountIBAN() != null) {
-            operation.setExternalAccountIBAN(operationInput.getExternalAccountIBAN());
+        if(operationInput.getSecondAccountIBAN() != null) {
+            operation.setSecondAccountIBAN(operationInput.getSecondAccountIBAN());
         }
-        if(operationInput.getCountry() != null) {
-            operation.setCountry(operationInput.getCountry());
-            //TODO check pays opération
+        if(operationInput.getSecondAccountCountry() != null) {
+            operation.setSecondAccountCountry(operationInput.getSecondAccountCountry());
         }
         if(operationInput.getCategory() != null) {
             operation.setCategory(operation.getCategory());
         }
-        if(operationInput.getInternalAccountId() != null) {
-            operation.setInternalAccount(internalAccount);
+        if(operationInput.getFirstAccountId() != null) {
+            //Recherche du compte associé et levée d'une exception si le compte n'est pas trouvé.
+            var firstAccount = accountRepository.find(operationInput.getFirstAccountId())
+                                                         .orElseThrow(() -> AccountNotFoundException.of(operationInput.getFirstAccountId()));
+            operation.setFirstAccount(firstAccount);
+        }
+        if(operationInput.getFirstAccountCardId() != null) {
+            //Recherche de la carte associée et levée d'une exception si la carte n'est pas trouvée.
+            var firstAccountCard = cardRepository.find(operationInput.getFirstAccountCardId())
+                                                        .orElseThrow(() -> CardNotFoundException.of(operationInput.getFirstAccountCardId()));
+            operation.setFirstAccountCard(firstAccountCard);
         }
 
-        //TODO check paramètres carte
-
         //Vérification des données saisies.
-        //TODO corriger problème : erreur 500 au lieu de 400
-        operationValidator.validate(new OperationInput(operationInput.getLabel(), operationInput.getAmount(),
-        operation.getExternalAccountName(), operationInput.getExternalAccountIBAN(), operation.getCountry(),
-        operation.getCategory(), operationInput.getInternalAccountId()));
+        operationValidator.validate(new OperationInput(operation.getLabel(), operation.getAmount(),
+        operation.getSecondAccountName(), operation.getSecondAccountCountry(), operation.getSecondAccountIBAN(),
+        operation.getCategory(), operation.getFirstAccount().getId(),
+        operation.getFirstAccountCard() != null ? operation.getFirstAccountCard().getId() : null));
+
+        //TODO check pays opération
+        //TODO check paramètres carte
 
         //Sauvegarde des modifications.
         operation = operationRepository.save(operation);
@@ -280,7 +321,7 @@ public class OperationController {
                 //Si l'opération a été confirmée.
                 if (operation.isConfirmed()) {
                     //Levée d'une exception.
-                    throw OperationConfirmedException.of(operationId);
+                    throw new OperationConfirmedException(operationId);
                 } else {
                     //Passage de l'opération à inactive.
                     operationRepository.delete(operationId);

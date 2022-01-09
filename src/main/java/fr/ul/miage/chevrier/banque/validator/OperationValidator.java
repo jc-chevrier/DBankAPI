@@ -1,6 +1,7 @@
 package fr.ul.miage.chevrier.banque.validator;
 
 import fr.ul.miage.chevrier.banque.dto.OperationInput;
+import fr.ul.miage.chevrier.banque.exception.LayerConstraintViolationException;
 import org.springframework.stereotype.Service;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -22,7 +23,7 @@ public class OperationValidator {
     public void validate(OperationInput input) {
         Set<ConstraintViolation<OperationInput>> violations = validator.validate(input);
         if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
+            throw new LayerConstraintViolationException(violations);
         }
     }
 }

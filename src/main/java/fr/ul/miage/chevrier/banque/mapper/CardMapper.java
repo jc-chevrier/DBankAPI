@@ -8,6 +8,10 @@ import org.mapstruct.Mapping;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Mapper entité <-> vue, saisies (DTO)
+ * pour les cartes des comptes bancaires.
+ */
 @Mapper(componentModel = "spring")
 public interface CardMapper {
     CardView toDTO(Card card);

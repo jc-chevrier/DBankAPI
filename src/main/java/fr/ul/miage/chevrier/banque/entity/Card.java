@@ -44,6 +44,6 @@ public class Card implements Serializable {
     private boolean active = true;
 
     @OneToOne
-    @JoinColumn(name = "ACCOUNT_ID", referencedColumnName = "id")
+    @JoinColumn(name = "ACCOUNT_ID", referencedColumnName = "ID")
     private Account account;
 }

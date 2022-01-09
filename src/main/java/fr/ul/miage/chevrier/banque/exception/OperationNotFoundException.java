@@ -7,6 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.UUID;
 
+/**
+ * Exception pour les opérations bancaires
+ * non trouvées.
+ */
 @ResponseStatus(HttpStatus.NOT_FOUND)
 @Getter
 @ToString

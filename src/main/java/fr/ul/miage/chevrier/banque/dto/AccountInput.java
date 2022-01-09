@@ -35,6 +35,11 @@ public class AccountInput {
     private String passportNumber;
 
     @NotBlank
+    @Size(min = 11, max = 14)
+    @Pattern(regexp = "^[0-9]{11,14}$")
+    private String phoneNumber;
+
+    @NotBlank
     @Size(min = 15, max = 34)
     @Pattern(regexp = "^[A-Z]{2}[0-9]{13,32}$")
     private String IBAN;

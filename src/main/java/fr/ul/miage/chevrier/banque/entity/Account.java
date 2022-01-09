@@ -30,6 +30,8 @@ public class Account implements Serializable {
 
     private String passportNumber;
 
+    private String phoneNumber;
+
     private String IBAN;
 
     private String secret;

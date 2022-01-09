@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Mapper entité <-> DTO (vue, saisies)
+ * Mapper entité <-> vue, saisies (DTO)
  * pour les comptes bancaires des clients.
  */
 @Mapper(componentModel = "spring")
