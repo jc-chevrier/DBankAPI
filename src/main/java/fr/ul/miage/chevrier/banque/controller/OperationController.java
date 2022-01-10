@@ -54,14 +54,47 @@ public class OperationController {
      *
      * @param interval                                          Intervalle de pagination.
      * @param offset                                            Indice de début de pagination.
+     * @param id                                                Identifiant de l'opération.
+     * @param label                                             Libellé de l'opération.
+     * @param amount                                            Montant de l'opération.
+     * @param secondAccountName                                 Nom du second compte de l'opération.
+     * @param secondAccountCountry                              Pays du second compte de l'opération.
+     * @param secondAccountIBAN                                 IBAN du second compte de l'opération.
+     * @param rate                                              Taux appliqué à l'opération.
+     * @param category                                          Catégorie de l'opération.
+     * @param confirmed                                         Confirmation de l'opération.
+     * @param dateAdded                                         Date d'ajout de l'opération.
+     * @param firstAccountId                                    Identifiant du premier compte de l'opération.
+     * @param firstAccountCardId                                Identifiant de la carte du premier compte de l'opération.
      * @return CollectionModel<EntityModel<OperationView>>      Collection d'opération bancaire.
      */
     @GetMapping
     public CollectionModel<EntityModel<OperationView>> findAll(
             @RequestParam(required = false, name = "interval", defaultValue = "20") Integer interval,
-            @RequestParam(required = false, name = "offset", defaultValue = "0") Integer offset) {
+            @RequestParam(required = false, name = "offset", defaultValue = "0") Integer offset,
+            @RequestParam(required = false, name = "id", defaultValue = "") String id,
+            @RequestParam(required = false, name = "label", defaultValue = "") String label,
+            @RequestParam(required = false, name = "amount", defaultValue = "") Double amount,
+            @RequestParam(required = false, name = "secondAccountName", defaultValue = "") String secondAccountName,
+            @RequestParam(required = false, name = "secondAccountCountry", defaultValue = "") String secondAccountCountry,
+            @RequestParam(required = false, name = "secondAccountIBAN", defaultValue = "") String secondAccountIBAN,
+            @RequestParam(required = false, name = "rate", defaultValue = "") Double rate,
+            @RequestParam(required = false, name = "category", defaultValue = "") String category,
+            @RequestParam(required = false, name = "confirmed", defaultValue = "") Boolean confirmed,
+            @RequestParam(required = false, name = "dateAdded", defaultValue = "") String dateAdded,
+            @RequestParam(required = false, name = "firstAccountId", defaultValue = "") String firstAccountId,
+            @RequestParam(required = false, name = "firstAccountCardId", defaultValue = "") String firstAccountCardId) {
+        //Vérification des droits d'accès.
+        var isExternalUser = false;//TODO à revoir
+        if(isExternalUser && (amount != null)) {
+            //Pas de droit d'accès et levée d'une exception.
+            throw new AccessDeniedException();
+        }
+
         //Recherche des opérations à partir des informations saisies.
-        var operations =  operationRepository.findAll(interval, offset);
+        var operations =  operationRepository.findAll(interval, offset, id, label, amount, secondAccountName,
+                                                                    secondAccountCountry, secondAccountIBAN, rate, category,
+                                                                    confirmed, dateAdded, firstAccountId, firstAccountCardId);
 
         //Transformation des entités opérations en vues puis ajout des liens d'actions.
         return operationAssembler.toCollectionModel(operationMapper.toView(operations));
@@ -176,7 +209,7 @@ public class OperationController {
         //Vérification du droit de modification.
         //Si l'opération a été confirmée.
         if (operation.getConfirmed()) {
-            //Levée d'une exception.
+            //Pas de droit de modification et levée d'une exception.
             throw new OperationConfirmedException(operationId);
         } else {
             //Type d'opération : via carte ou non ?
@@ -249,7 +282,7 @@ public class OperationController {
            || operationInput.getSecondAccountIBAN() != null
            || operationInput.getSecondAccountCountry() != null)
            && operation.getConfirmed()) {
-                //Levée d'une exception.
+                //Pas de droit de modification et levée d'une exception.
                 throw new OperationConfirmedException(operationId);
         }
 
@@ -286,9 +319,8 @@ public class OperationController {
         }
 
         //Vérification des informations saisies.
-        operationValidator.validate(new OperationInput(operation.getLabel(), operation.getAmount(),
-        operation.getSecondAccountName(), operation.getSecondAccountCountry(), operation.getSecondAccountIBAN(),
-        operation.getCategory(), operation.getFirstAccount().getId(),
+        operationValidator.validate(new OperationInput(operation.getLabel(), operation.getAmount(), operation.getSecondAccountName(),
+        operation.getSecondAccountCountry(), operation.getSecondAccountIBAN(), operation.getCategory(), operation.getFirstAccount().getId(),
         operation.getFirstAccountCard() != null ? operation.getFirstAccountCard().getId() : null));
 
         //TODO check pays opération
@@ -315,7 +347,7 @@ public class OperationController {
                 //Vérification du droit de suppression.
                 //Si l'opération a été confirmée.
                 if (operation.getConfirmed()) {
-                    //Levée d'une exception.
+                    //Pas de droit de suppression et levée d'une exception.
                     throw new OperationConfirmedException(operationId);
                 } else {
                     //Passage de l'opération à inactive.

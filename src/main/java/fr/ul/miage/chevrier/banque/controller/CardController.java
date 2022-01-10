@@ -62,6 +62,7 @@ public class CardController {
      * @param blocked                                       Filtre partiel sur le blocage de la carte.
      * @param expired                                       Filtre partiel sur l'expiration de la carte.
      * @param dateAdded                                     Filtre partiel sur la date d'ajout de la carte.
+     * @param accountId                                     Filtre partiel sur l'identifiant du compte associé à la carte.
      * @return CollectionModel<EntityModel<CardView>>       Collection de cartes bancaires.
      */
     @GetMapping
@@ -78,16 +79,19 @@ public class CardController {
             @RequestParam(required = false, name = "contactless", defaultValue = "") Boolean contactless,
             @RequestParam(required = false, name = "blocked", defaultValue = "") Boolean blocked,
             @RequestParam(required = false, name = "expired", defaultValue = "") Boolean expired,
-            @RequestParam(required = false, name = "dateAdded", defaultValue = "") String dateAdded) {
+            @RequestParam(required = false, name = "dateAdded", defaultValue = "") String dateAdded,
+            @RequestParam(required = false, name = "accountId", defaultValue = "") String accountId) {
         //Vérification des droits d'accès.
         var isExternalUser = false;//TODO à revoir
         if(isExternalUser && (!cryptogram.equals("") || !expirationDate.equals("") || !ceiling.equals(""))) {
+            //Pas de droit d'accès et levée d'une exception.
             throw new AccessDeniedException();
         }
 
         //Recherche des cartes.
         var cards =  cardRepository.findAll(interval, offset, id, number, cryptogram, expirationDate, ceiling,
-                                                        virtual, localization, contactless, blocked, expired, dateAdded);
+                                                        virtual, localization, contactless, blocked, expired, dateAdded,
+                                                        accountId);
 
         //Transformation des entités cartes en vues puis ajout des liens d'actions.
         return cardAssembler.toCollectionModel(cardMapper.toView(cards));
@@ -147,7 +151,6 @@ public class CardController {
      * @return Map<String, Object>      Résultat de la vérification.
      */
     @PostMapping("{cardId}/identity/check")
-    @Transactional
     public Map<String, Object> checkIdentity(@PathVariable("cardId") UUID cardId,
                                              @RequestBody @Valid CardIdentityInput cardIdentityInput) {
         //Vérification de la carte et levée d'une exception si la carte n'est pas trouvée.
@@ -177,7 +180,6 @@ public class CardController {
      * @return Map<String, Object>      Résultat de la vérification.
      */
     @PostMapping("{cardId}/code/check")
-    @Transactional
     public Map<String, Object> checkCode(@PathVariable("cardId") UUID cardId,
                             @RequestBody @Valid CardCodeInput cardCodeInput) {
         //Vérification de la carte et levée d'une exception si la carte n'est pas trouvée.
@@ -208,7 +210,7 @@ public class CardController {
     public void expire(@PathVariable("cardId") UUID cardId) {
         //Recherche de la carte lev  hée d'une exception si la carte n'est pas trouvée.
         var card =  cardRepository.find(cardId)
-                                          .orElseThrow(() -> CardNotFoundException.of(cardId));
+                                         .orElseThrow(() -> CardNotFoundException.of(cardId));
 
         //Modification de la carte.
         card.setExpired(true);
@@ -335,9 +337,9 @@ public class CardController {
                 }
 
                 //Vérification des informations saisies.
-                cardValidator.validate(new CardInput(card.getNumber(), card.getCryptogram(), card.getExpirationDate(), card.getCode(),
-                        card.getCeiling(), card.getVirtual(), card.getLocalization(), card.getContactless(), card.getBlocked(),
-                        card.getAccount().getId()));
+                cardValidator.validate(new CardInput(card.getNumber(), card.getCryptogram(), card.getExpirationDate(),
+                card.getCode(), card.getCeiling(), card.getVirtual(), card.getLocalization(), card.getContactless(),
+                card.getBlocked(), card.getAccount().getId()));
 
                 //Sauvegarde des modifications.
                 card = cardRepository.save(card);

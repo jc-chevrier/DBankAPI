@@ -23,7 +23,7 @@ public class CardAssembler implements RepresentationModelAssembler<CardView, Ent
         return EntityModel.of(cardView,
                 linkTo(methodOn(CardController.class)
                         .findAll(null, null, null, null, null,  null, null,
-                                 null, null, null, null, null, null))
+                                 null, null, null, null, null, null, null))
                         .withRel("collection"),
                 linkTo(methodOn(CardController.class)
                         .find(cardView.getId()))
@@ -38,7 +38,7 @@ public class CardAssembler implements RepresentationModelAssembler<CardView, Ent
         return CollectionModel.of(cardModel,
                 linkTo(methodOn(CardController.class)
                         .findAll(null, null, null, null, null, null, null,
-                                null, null, null, null, null, null))
+                                null, null, null, null, null, null, null))
                         .withSelfRel());
     }
 }

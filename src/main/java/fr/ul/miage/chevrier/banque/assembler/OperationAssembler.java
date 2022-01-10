@@ -23,7 +23,8 @@ public class OperationAssembler implements RepresentationModelAssembler<Operatio
     public EntityModel<OperationView> toModel(OperationView operationView) {
         return EntityModel.of(operationView,
                 linkTo(methodOn(OperationController.class)
-                        .findAll(null, null))
+                        .findAll(null, null, null, null,null, null, null,
+                                 null, null, null, null, null, null, null))
                         .withRel("collection"),
                 linkTo(methodOn(OperationController.class)
                         .find(operationView.getId()))
@@ -37,7 +38,8 @@ public class OperationAssembler implements RepresentationModelAssembler<Operatio
                 .collect(Collectors.toList());
         return CollectionModel.of(operationModel,
                 linkTo(methodOn(OperationController.class)
-                        .findAll(null, null))
+                        .findAll(null, null, null, null, null, null, null,
+                                 null, null, null, null, null, null, null))
                         .withSelfRel());
     }
 }

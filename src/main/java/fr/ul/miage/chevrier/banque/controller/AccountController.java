@@ -74,6 +74,7 @@ public class AccountController {
         var isExternalUser = false;//TODO à revoir
         if(isExternalUser && (!birthDate.equals("") || !passportNumber.equals("") || !phoneNumber.equals("")
         || balance != null)) {
+            //Pas de droit d'accès et levée d'une exception.
             throw new AccessDeniedException();
         }
 

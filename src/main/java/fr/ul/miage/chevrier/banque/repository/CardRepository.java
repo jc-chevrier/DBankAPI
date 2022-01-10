@@ -65,6 +65,7 @@ public interface CardRepository extends CrudRepository<Card, UUID> {
      * @param blocked               Filtre partiel sur le blocage de la carte.
      * @param expired               Filtre partiel sur l'expiration de la carte.
      * @param dateAdded             Filtre partiel sur la date d'ajout de la carte.
+     * @param accountId             Filtre partiel sur l'identifiant du compte associé à la carte.
      * @return List<Card>           Cartes actives trouvées.
      */
     @Query(value = "SELECT * " +
@@ -81,6 +82,7 @@ public interface CardRepository extends CrudRepository<Card, UUID> {
                    "AND EXPIRED LIKE CONCAT('%', :expired, '%') " +
                    "AND DATE_ADDED LIKE CONCAT('%', :dateAdded, '%') " +
                    "AND ACTIVE = TRUE " +
+                   "AND ACCOUNT_ID LIKE CONCAT('%', :accountId, '%') " +
                    "LIMIT :interval " +
                    "OFFSET :offset",
             nativeQuery = true)
@@ -90,7 +92,7 @@ public interface CardRepository extends CrudRepository<Card, UUID> {
                        @Param("ceiling") Double ceiling, @Param("virtual") Boolean virtual,
                        @Param("localization") Boolean localization, @Param("contactless") Boolean contactless,
                        @Param("blocked") Boolean blocked, @Param("expired") Boolean expired,
-                       @Param("dateAdded") String dateAdded);
+                       @Param("dateAdded") String dateAdded, @Param("accountId") String accountId);
 
     /**
      * Chercher une carte active en précisant son
