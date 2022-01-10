@@ -14,7 +14,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Classe pour associer aux vues (DTOs) des
- * comptes bancaires es liens d'actions (HATEOAS).
+ * comptes bancaires des liens d'actions (HATEOAS).
  */
 @Component
 public class AccountAssembler implements RepresentationModelAssembler<AccountView, EntityModel<AccountView>> {
@@ -22,7 +22,8 @@ public class AccountAssembler implements RepresentationModelAssembler<AccountVie
     public EntityModel<AccountView> toModel(AccountView accountView) {
         return EntityModel.of(accountView,
                               linkTo(methodOn(AccountController.class)
-                                     .findAll(null, null))
+                                     .findAll(null, null, null, null, null, null,
+                                             null, null, null, null, null))
                                      .withRel("collection"),
                               linkTo(methodOn(AccountController.class)
                                      .find(accountView.getId()))
@@ -36,7 +37,8 @@ public class AccountAssembler implements RepresentationModelAssembler<AccountVie
                                                                     .collect(Collectors.toList());
         return CollectionModel.of(accountModel,
                                   linkTo(methodOn(AccountController.class)
-                                         .findAll(null, null))
+                                         .findAll(null, null, null, null, null, null,
+                                                  null, null, null, null, null))
                                          .withSelfRel());
     }
 }

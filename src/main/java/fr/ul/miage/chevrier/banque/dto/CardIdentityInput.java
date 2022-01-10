@@ -8,18 +8,17 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Positive;
 import java.util.Date;
-import java.util.UUID;
 
 /**
- * Classe pour les saisies des champs des
- * cartes des comptes bancaires (DTO).
+ * Classe pour les saisies de vérification
+ * des codes des cartes des comptes bancaires
+ * (DTO).
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CardInput {
+public class CardIdentityInput {
     @NotBlank
     @Pattern(regexp = "^[0-9]{16}$")
     private String number;
@@ -31,27 +30,4 @@ public class CardInput {
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM", timezone = "UTC")
     private Date expirationDate;
-
-    @NotBlank
-    @Pattern(regexp = "^[0-9]{4}$")
-    private String code;
-
-    @NotNull
-    @Positive
-    private Double ceiling;
-
-    @NotNull
-    private Boolean virtual;
-
-    @NotNull
-    private Boolean localization;
-
-    @NotNull
-    private Boolean contactless;
-
-    @NotNull
-    private Boolean blocked;
-
-    @NotNull
-    private UUID accountId;
 }

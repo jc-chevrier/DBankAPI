@@ -47,9 +47,20 @@ public class AccountController {
     @GetMapping
     public CollectionModel<EntityModel<AccountView>> findAll(
             @RequestParam(required = false, name = "interval", defaultValue = "20") Integer interval,
-            @RequestParam(required = false, name = "offset", defaultValue = "0") Integer offset) {
+            @RequestParam(required = false, name = "offset", defaultValue = "0") Integer offset,
+            @RequestParam(required = false, name = "id", defaultValue = "") Integer id,
+            @RequestParam(required = false, name = "firstName", defaultValue = "") String firstName,
+            @RequestParam(required = false, name = "lastName", defaultValue = "") String lastName,
+            @RequestParam(required = false, name = "birthDate", defaultValue = "") String birthDate,
+            @RequestParam(required = false, name = "country", defaultValue = "") String country,
+            @RequestParam(required = false, name = "passportNumber", defaultValue = "") String passportNumber,
+            @RequestParam(required = false, name = "phoneNumber", defaultValue = "") String phoneNumber,
+            @RequestParam(required = false, name = "IBAN", defaultValue = "") String IBAN,
+            @RequestParam(required = false, name = "balance", defaultValue = "") Double balance
+    ) {
         //Recherche des comptes.
-        var accounts =  accountRepository.findAll(interval, offset);
+        var accounts =  accountRepository.findAll(interval, offset, id, firstName, lastName, birthDate,
+                                                               country, passportNumber, phoneNumber, IBAN, balance);
 
         //Transformation des entités comptes en vues puis ajout des liens d'actions.
         return accountAssembler.toCollectionModel(accountMapper.toView(accounts));
@@ -80,7 +91,7 @@ public class AccountController {
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
     public EntityModel<AccountView> create(@RequestBody @Valid AccountInput accountInput) {
-        ///Création du nouveau compte.
+        ///Création du nouveau compte à partir des informations saisies.
         var account = accountMapper.toEntity(accountInput);
 
         //Génération de l'identifiant du compte.
@@ -113,7 +124,7 @@ public class AccountController {
         var account = accountRepository.find(accountId)
                                                 .orElseThrow(() -> AccountNotFoundException.of(accountId));
 
-        //Récupération des données saisies.
+        //Récupération des informations saisies.
         account.setFirstName(accountInput.getFirstName());
         account.setLastName(accountInput.getLastName());
         account.setCountry(accountInput.getCountry());
@@ -146,7 +157,7 @@ public class AccountController {
         var account = accountRepository.find(accountId)
                                                 .orElseThrow(() -> AccountNotFoundException.of(accountId));
 
-        //Récupération des données saisies.
+        //Récupération des informations saisies.
         if(accountInput.getFirstName() != null) {
             account.setFirstName(accountInput.getFirstName());
         }
@@ -169,7 +180,7 @@ public class AccountController {
             account.setIBAN(accountInput.getIBAN());
         }
 
-        //Vérification des données saisies.
+        //Vérification des informations saisies.
         accountValidator.validate(new AccountInput(account.getFirstName(), account.getLastName(),
         account.getBirthDate(), account.getCountry(), account.getPassportNumber(), account.getPhoneNumber(), account.getIBAN()));
 

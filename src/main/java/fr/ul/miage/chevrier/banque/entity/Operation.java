@@ -33,18 +33,18 @@ public class Operation {
 
     private String category;
 
-    private boolean confirmed = false;
+    private Boolean confirmed = false;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date dateAdded = new Date();
 
-    private boolean active = true;
+    private Boolean active = true;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "FIRST_ACCOUNT_ID", referencedColumnName = "ID")
     private Account firstAccount;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "FIRST_ACCOUNT_CARD_ID", referencedColumnName = "ID")
     private Card firstAccountCard;
 }

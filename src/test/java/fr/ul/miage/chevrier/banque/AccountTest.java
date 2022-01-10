@@ -563,7 +563,7 @@ public class AccountTest extends GlobalTest {
         assertThat(accountBefore.getIBAN(), equalTo("FR7630001007941234567890185"));
         assertThat(accountBefore.getSecret(), equalTo("secret"));
         assertThat(accountBefore.getBalance(), equalTo(0.0));
-        assertThat(accountBefore.isActive(), equalTo(true));
+        assertThat(accountBefore.getActive(), equalTo(true));
 
         var response = given().body(toJSONString(new AccountInput("Leo", null, null,
                                           null, null, null, null)))
@@ -604,7 +604,7 @@ public class AccountTest extends GlobalTest {
         assertThat(accountAfter.getIBAN(), equalTo("FR7630001007941234567890185"));
         assertThat(accountAfter.getSecret(), equalTo("secret"));
         assertThat(accountAfter.getBalance(), equalTo(0.0));
-        assertThat(accountAfter.isActive(), equalTo(true));
+        assertThat(accountAfter.getActive(), equalTo(true));
     }
 
     @Test
@@ -621,7 +621,7 @@ public class AccountTest extends GlobalTest {
         assertThat(accountBefore.getIBAN(), equalTo("FR7630001007941234567890185"));
         assertThat(accountBefore.getSecret(), equalTo("secret"));
         assertThat(accountBefore.getBalance(), equalTo(0.0));
-        assertThat(accountBefore.isActive(), equalTo(true));
+        assertThat(accountBefore.getActive(), equalTo(true));
 
         var response = given().body(toJSONString(new AccountInput(null, "Olsan", null,
                                         null, null, null, null)))
@@ -662,7 +662,7 @@ public class AccountTest extends GlobalTest {
         assertThat(accountAfter.getIBAN(), equalTo("FR7630001007941234567890185"));
         assertThat(accountAfter.getSecret(), equalTo("secret"));
         assertThat(accountAfter.getBalance(), equalTo(0.0));
-        assertThat(accountAfter.isActive(), equalTo(true));
+        assertThat(accountAfter.getActive(), equalTo(true));
     }
 
     @Test
@@ -679,7 +679,7 @@ public class AccountTest extends GlobalTest {
         assertThat(accountBefore.getIBAN(), equalTo("FR7630001007941234567890185"));
         assertThat(accountBefore.getSecret(), equalTo("secret"));
         assertThat(accountBefore.getBalance(), equalTo(0.0));
-        assertThat(accountBefore.isActive(), equalTo(true));
+        assertThat(accountBefore.getActive(), equalTo(true));
 
         var response = given().body(toJSONString(new AccountInput(null, null, null,
                                        "England", null, null, null)))
@@ -720,7 +720,7 @@ public class AccountTest extends GlobalTest {
         assertThat(accountAfter.getIBAN(), equalTo("FR7630001007941234567890185"));
         assertThat(accountAfter.getSecret(), equalTo("secret"));
         assertThat(accountAfter.getBalance(), equalTo(0.0));
-        assertThat(accountAfter.isActive(), equalTo(true));
+        assertThat(accountAfter.getActive(), equalTo(true));
     }
 
     @Test
@@ -737,7 +737,7 @@ public class AccountTest extends GlobalTest {
         assertThat(accountBefore.getIBAN(), equalTo("FR7630001007941234567890185"));
         assertThat(accountBefore.getSecret(), equalTo("secret"));
         assertThat(accountBefore.getBalance(), equalTo(0.0));
-        assertThat(accountBefore.isActive(), equalTo(true));
+        assertThat(accountBefore.getActive(), equalTo(true));
 
         var response = given().body(toJSONString(new AccountInput(null, null, null,
                                         null,"993380006", null, null)))
@@ -778,7 +778,7 @@ public class AccountTest extends GlobalTest {
         assertThat(accountAfter.getIBAN(), equalTo("FR7630001007941234567890185"));
         assertThat(accountAfter.getSecret(), equalTo("secret"));
         assertThat(accountAfter.getBalance(), equalTo(0.0));
-        assertThat(accountAfter.isActive(), equalTo(true));
+        assertThat(accountAfter.getActive(), equalTo(true));
     }
 
     @Test
@@ -795,7 +795,7 @@ public class AccountTest extends GlobalTest {
         assertThat(accountBefore.getIBAN(), equalTo("FR7630001007941234567890185"));
         assertThat(accountBefore.getSecret(), equalTo("secret"));
         assertThat(accountBefore.getBalance(), equalTo(0.0));
-        assertThat(accountBefore.isActive(), equalTo(true));
+        assertThat(accountBefore.getActive(), equalTo(true));
 
         var response = given().body(toJSONString(new AccountInput(null, null, null,
                                         null, null, null, "FR7990001007941234567890185")))
@@ -836,7 +836,7 @@ public class AccountTest extends GlobalTest {
         assertThat(accountAfter.getIBAN(), equalTo("FR7990001007941234567890185"));
         assertThat(accountAfter.getSecret(), equalTo("secret"));
         assertThat(accountAfter.getBalance(), equalTo(0.0));
-        assertThat(accountAfter.isActive(), equalTo(true));
+        assertThat(accountAfter.getActive(), equalTo(true));
     }
 
     @Test

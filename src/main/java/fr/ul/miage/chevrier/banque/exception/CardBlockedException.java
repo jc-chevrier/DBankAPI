@@ -5,19 +5,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
 import java.util.UUID;
 
 /**
- * Exception pour les cartes bancaires non
- * trouvées.
+ * Exception pour les cartes bancaires
+ * bloquées.
  */
-@ResponseStatus(HttpStatus.NOT_FOUND)
+@ResponseStatus(HttpStatus.UNAUTHORIZED)
 @Getter
 @ToString
 @RequiredArgsConstructor
-public class CardNotFoundException extends RuntimeException {
+public class CardBlockedException extends RuntimeException {
     private final UUID id;
-    public static CardNotFoundException of(UUID id) {
-        return new CardNotFoundException(id);
+    public static CardBlockedException of(UUID id) {
+        return new CardBlockedException(id);
     }
 }

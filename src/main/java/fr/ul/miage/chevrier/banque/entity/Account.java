@@ -41,7 +41,7 @@ public class Account implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date dateAdded = new Date();
 
-    private boolean active = true;
+    private Boolean active = true;
 
     /**
      * Incémenter / décrementer le solde du compte

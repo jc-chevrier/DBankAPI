@@ -38,8 +38,8 @@ public interface CardRepository extends CrudRepository<Card, UUID> {
     @Query(value = "SELECT * " +
                    "FROM CARD " +
                    "WHERE ACTIVE = TRUE " +
-                   "LIMIT (:interval) " +
-                   "OFFSET (:offset)",
+                   "LIMIT :interval " +
+                   "OFFSET :offset",
             nativeQuery = true)
     List<Card> findAll(@Param("interval") Integer interval, @Param("offset") Integer offset);
 
@@ -52,7 +52,7 @@ public interface CardRepository extends CrudRepository<Card, UUID> {
      */
     @Query(value = "SELECT c " +
             "FROM Card c " +
-            "WHERE c.id = (:cardId) " +
+            "WHERE c.id = :cardId " +
             "AND c.active = true")
     Optional<Card> find(@Param("cardId") UUID cardId);
 
@@ -65,7 +65,7 @@ public interface CardRepository extends CrudRepository<Card, UUID> {
     @Modifying
     @Query(value = "UPDATE CARD " +
                    "SET ACTIVE = FALSE " +
-                   "WHERE ID = (:cardId)",
+                   "WHERE ID = :cardId",
             nativeQuery = true)
     void delete(@Param("cardId") UUID cardId);
 }

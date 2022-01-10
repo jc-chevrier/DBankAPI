@@ -60,7 +60,7 @@ public class OperationController {
     public CollectionModel<EntityModel<OperationView>> findAll(
             @RequestParam(required = false, name = "interval", defaultValue = "20") Integer interval,
             @RequestParam(required = false, name = "offset", defaultValue = "0") Integer offset) {
-        //Recherche des opérations.
+        //Recherche des opérations à partir des informations saisies.
         var operations =  operationRepository.findAll(interval, offset);
 
         //Transformation des entités opérations en vues puis ajout des liens d'actions.
@@ -159,9 +159,7 @@ public class OperationController {
 
     /**
      * Mettre à jour les informations d'une opération
-     * bancaire pouvant être modifiée : libellé, montant,
-     * pays, nom du compte externe, IBAN du compte externe,
-     * catégorie, id du compte interne.
+     * bancaire pouvant être modifiée.
      *
      * @param operationId                       Identifiant de l'opération bancaire à modifier.
      * @param operationInput                    Informations modifiées de l'opération bancaire.
@@ -177,7 +175,7 @@ public class OperationController {
 
         //Vérification du droit de modification.
         //Si l'opération a été confirmée.
-        if (operation.isConfirmed()) {
+        if (operation.getConfirmed()) {
             //Levée d'une exception.
             throw new OperationConfirmedException(operationId);
         } else {
@@ -196,7 +194,7 @@ public class OperationController {
                                                  .orElseThrow(() -> CardNotFoundException.of(operationInput.getFirstAccountCardId()));
             }
 
-            //Récupération des données saisies.
+            //Récupération des informations saisies.
             operation.setLabel(operationInput.getLabel());
             operation.setAmount(operationInput.getAmount());
             operation.setSecondAccountName(operationInput.getSecondAccountName());
@@ -228,10 +226,7 @@ public class OperationController {
 
     /**
      * Mettre à jour uniquement certaines informations
-     * d'une opération bancaire pouvant être modifiée :
-     * libellé, et/ou montant, et/ou pays, et/ou nom du
-     * compte externe, et/ou IBAN du compte externe, et/ou
-     * catégorie, et/ou id du compte interne.
+     * d'une opération bancaire pouvant être modifiée.
      *
      * @param operationId                     Identifiant de l'opération bancaire à modifier.
      * @param operationInput                  Informations modifiées de l'opération bancaire.
@@ -253,12 +248,12 @@ public class OperationController {
            || operationInput.getSecondAccountName() != null
            || operationInput.getSecondAccountIBAN() != null
            || operationInput.getSecondAccountCountry() != null)
-           && operation.isConfirmed()) {
+           && operation.getConfirmed()) {
                 //Levée d'une exception.
                 throw new OperationConfirmedException(operationId);
         }
 
-        //Récupération des données saisies.
+        //Récupération des informations saisies.
         if(operationInput.getLabel() != null) {
             operation.setLabel(operationInput.getLabel());
         }
@@ -290,7 +285,7 @@ public class OperationController {
             operation.setFirstAccountCard(firstAccountCard);
         }
 
-        //Vérification des données saisies.
+        //Vérification des informations saisies.
         operationValidator.validate(new OperationInput(operation.getLabel(), operation.getAmount(),
         operation.getSecondAccountName(), operation.getSecondAccountCountry(), operation.getSecondAccountIBAN(),
         operation.getCategory(), operation.getFirstAccount().getId(),
@@ -319,7 +314,7 @@ public class OperationController {
         operationRepository.find(operationId).ifPresent((operation) -> {
                 //Vérification du droit de suppression.
                 //Si l'opération a été confirmée.
-                if (operation.isConfirmed()) {
+                if (operation.getConfirmed()) {
                     //Levée d'une exception.
                     throw new OperationConfirmedException(operationId);
                 } else {

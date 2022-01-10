@@ -40,8 +40,8 @@ public interface OperationRepository extends CrudRepository<Operation, UUID> {
     @Query(value = "SELECT * " +
                    "FROM OPERATION " +
                    "WHERE ACTIVE = TRUE " +
-                   "LIMIT (:interval) " +
-                   "OFFSET (:offset)",
+                   "LIMIT :interval " +
+                   "OFFSET :offset",
             nativeQuery = true)
     List<Operation> findAll(@Param("interval") Integer interval, @Param("offset") Integer offset);
 
@@ -53,7 +53,7 @@ public interface OperationRepository extends CrudRepository<Operation, UUID> {
      */
     @Query(value = "SELECT o " +
                     "FROM Operation o " +
-                    "WHERE o.id = (:operationId) " +
+                    "WHERE o.id = :operationId " +
                     "AND o.active = true")
     Optional<Operation> find(@Param("operationId") UUID operationId);
 
@@ -66,7 +66,7 @@ public interface OperationRepository extends CrudRepository<Operation, UUID> {
     @Modifying
     @Query(value = "UPDATE OPERATION " +
                    "SET ACTIVE = FALSE " +
-                   "WHERE ID = (:operationId) " +
+                   "WHERE ID = :operationId " +
                    "AND CONFIRMED = FALSE",
             nativeQuery = true)
     void delete(@Param("operationId") UUID operationId);
