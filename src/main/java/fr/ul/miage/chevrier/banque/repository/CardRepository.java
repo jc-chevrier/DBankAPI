@@ -7,6 +7,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.repository.CrudRepository;
 import fr.ul.miage.chevrier.banque.entity.Card;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -102,6 +104,39 @@ public interface CardRepository extends CrudRepository<Card, UUID> {
             "WHERE c.id = :cardId " +
             "AND c.active = true")
     Optional<Card> find(@Param("cardId") UUID cardId);
+
+    /**
+     * Vérifier l'identité de la carte.
+     *
+     * @param id                    Identifiant de la carte.
+     * @param number                Numéro de la carte.
+     * @param cryptogram            Cryptogramme de la carte.
+     * @param expirationDate        Date d'expiration de la carte.
+     * @return Boolean              Résultat de la vérification.
+     */
+    @Query(value = "SELECT COUNT(c) " +
+            "FROM Card c " +
+            "WHERE c.id = :id " +
+            "AND c.number = :number " +
+            "AND c.cryptogram = :cryptogram " +
+            "AND c.expirationDate = :expirationDate " +
+            "AND c.active = true")
+    Boolean checkIdentity(@Param("id") UUID id, @Param("number") String number,
+                          @Param("cryptogram") String cryptogram, @Param("expirationDate") Date expirationDate);
+
+    /**
+     * Vérifier le code de la carte.
+     *
+     * @param id            Identifiant de la carte.
+     * @param code          Code de la carte.
+     * @return Boolean      Résultat de la vérification.
+     */
+    @Query(value = "SELECT COUNT(c) " +
+            "FROM Card c " +
+            "WHERE c.id = :id " +
+            "AND c.code = :code " +
+            "AND c.active = TRUE")
+    Boolean checkCode(@Param("id") UUID id, @Param("code") String code);
 
     /**
      * Supprimer une carte en précisant son

@@ -18,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -140,35 +142,60 @@ public class CardController {
      * Vérifier les informations d'identification
      * saisies d'une carte bancaire.
      *
-     * @param cardId                Identifiant de la carte bancaire à modifier.
-     * @param cardIdentityInput     Informations saisies de la carte bancaire à vérifier.
-     * @return Object               Résultat de la vérification.
+     * @param cardId                    Identifiant de la carte bancaire à modifier.
+     * @param cardIdentityInput         Informations saisies de la carte bancaire à vérifier.
+     * @return Map<String, Object>      Résultat de la vérification.
      */
     @PostMapping("{cardId}/identity/check")
     @Transactional
-    public Object checkIdentity(@PathVariable("cardId") UUID cardId,
-                                @RequestBody @Valid CardIdentityInput cardIdentityInput) {
-        //Recherche de la carte levée d'une exception si la carte n'est pas trouvée.
-        var card =  cardRepository.find(cardId)
-                                         .orElseThrow(() -> CardNotFoundException.of(cardId));
-        return null;
+    public Map<String, Object> checkIdentity(@PathVariable("cardId") UUID cardId,
+                                             @RequestBody @Valid CardIdentityInput cardIdentityInput) {
+        //Vérification de la carte et levée d'une exception si la carte n'est pas trouvée.
+        cardRepository.find(cardId).orElseThrow(() -> CardNotFoundException.of(cardId));
+
+        //Vérification de l'identité du compte.
+        Boolean cardIdentityChecked = cardRepository.checkIdentity(cardId, cardIdentityInput.getNumber(),
+                                                                   cardIdentityInput.getCryptogram(), cardIdentityInput.getExpirationDate());
+
+        //Résultat.
+        Map<String, Object> resultJSONAsMap = new HashMap<String, Object>();
+        if(cardIdentityChecked) {
+            resultJSONAsMap.put("checked", true);
+            resultJSONAsMap.put("message", "Card identity checked.");
+        } else {
+            resultJSONAsMap.put("checked", false);
+            resultJSONAsMap.put("message", "Card identity not checked!");
+        }
+        return resultJSONAsMap;
     }
 
     /**
      * Vérifier le code saisi d'une carte bancaire.
      *
-     * @param cardId            Identifiant de la carte bancaire à modifier.
-     * @param cardCodeInput     Code saisi de la carte bancaire à vérifier.
-     * @return Object           Résultat de la vérification.
+     * @param cardId                    Identifiant de la carte bancaire à modifier.
+     * @param cardCodeInput             Code saisi de la carte bancaire à vérifier.
+     * @return Map<String, Object>      Résultat de la vérification.
      */
     @PostMapping("{cardId}/code/check")
     @Transactional
-    public Object checkCode(@PathVariable("cardId") UUID cardId,
+    public Map<String, Object> checkCode(@PathVariable("cardId") UUID cardId,
                             @RequestBody @Valid CardCodeInput cardCodeInput) {
-        //Recherche de la carte levée d'une exception si la carte n'est pas trouvée.
-        var card =  cardRepository.find(cardId)
-                                         .orElseThrow(() -> CardNotFoundException.of(cardId));
-       return null;
+        //Vérification de la carte et levée d'une exception si la carte n'est pas trouvée.
+        cardRepository.find(cardId).orElseThrow(() -> CardNotFoundException.of(cardId));
+
+        //Vérification du code de la carte.
+        Boolean cardIdentityChecked = cardRepository.checkCode(cardId, cardCodeInput.getCode());
+
+        //Résultat.
+        Map<String, Object> resultJSONAsMap = new HashMap<String, Object>();
+        if(cardIdentityChecked) {
+            resultJSONAsMap.put("checked", true);
+            resultJSONAsMap.put("message", "Card code checked.");
+        } else {
+            resultJSONAsMap.put("checked", false);
+            resultJSONAsMap.put("message", "Card code not checked!");
+        }
+        return resultJSONAsMap;
     }
 
     /**
@@ -179,7 +206,7 @@ public class CardController {
     @PostMapping("/{cardId}/expire")
     @Transactional
     public void expire(@PathVariable("cardId") UUID cardId) {
-        //Recherche de la carte levée d'une exception si la carte n'est pas trouvée.
+        //Recherche de la carte lev  hée d'une exception si la carte n'est pas trouvée.
         var card =  cardRepository.find(cardId)
                                           .orElseThrow(() -> CardNotFoundException.of(cardId));
 

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.FORBIDDEN)
 @Getter
 @ToString
-@RequiredArgsConstructor
 public class AccessDeniedException extends RuntimeException {
     public static AccessDeniedException of() {
         return new AccessDeniedException();
