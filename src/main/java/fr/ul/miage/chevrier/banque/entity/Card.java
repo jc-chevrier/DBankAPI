@@ -39,6 +39,8 @@ public class Card implements Serializable {
 
     private Boolean blocked;
 
+    private Boolean expired;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date dateAdded = new Date();
 

@@ -3,6 +3,7 @@ package fr.ul.miage.chevrier.banque.controller;
 import fr.ul.miage.chevrier.banque.assembler.AccountAssembler;
 import fr.ul.miage.chevrier.banque.dto.AccountInput;
 import fr.ul.miage.chevrier.banque.dto.AccountView;
+import fr.ul.miage.chevrier.banque.exception.AccessDeniedException;
 import fr.ul.miage.chevrier.banque.exception.AccountNotFoundException;
 import fr.ul.miage.chevrier.banque.mapper.AccountMapper;
 import fr.ul.miage.chevrier.banque.repository.AccountRepository;
@@ -42,13 +43,23 @@ public class AccountController {
      *
      * @param interval                                      Intervalle de pagination.
      * @param offset                                        Indice de début de pagination.
+     * @param id                                            Filtre partiel sur l'identifiant du compte.
+     * @param firstName                                     Filtre partiel sur le prénom du client du compte.
+     * @param lastName                                      Filtre partiel sur le nom du client du compte.
+     * @param birthDate                                     Filtre partiel sur la date de naissance du client du compte.
+     * @param country                                       Filtre partiel sur le pays du client du compte.
+     * @param passportNumber                                Filtre partiel sur le numéro de passeport du client du compte.
+     * @param phoneNumber                                   Filtre partiel sur le numéro de téléphone du client du compte.
+     * @param IBAN                                          Filtre partiel sur l'IBAN du client du compte.
+     * @param balance                                       Filtre partiel sur le solde du client du compte.
+     * @param dateAdded                                     Filtre partiel sur la date d'ajout du compte.
      * @return CollectionModel<EntityModel<AccountView>>    Collection de compte bancaire.
      */
     @GetMapping
     public CollectionModel<EntityModel<AccountView>> findAll(
             @RequestParam(required = false, name = "interval", defaultValue = "20") Integer interval,
             @RequestParam(required = false, name = "offset", defaultValue = "0") Integer offset,
-            @RequestParam(required = false, name = "id", defaultValue = "") Integer id,
+            @RequestParam(required = false, name = "id", defaultValue = "") String id,
             @RequestParam(required = false, name = "firstName", defaultValue = "") String firstName,
             @RequestParam(required = false, name = "lastName", defaultValue = "") String lastName,
             @RequestParam(required = false, name = "birthDate", defaultValue = "") String birthDate,
@@ -56,11 +67,19 @@ public class AccountController {
             @RequestParam(required = false, name = "passportNumber", defaultValue = "") String passportNumber,
             @RequestParam(required = false, name = "phoneNumber", defaultValue = "") String phoneNumber,
             @RequestParam(required = false, name = "IBAN", defaultValue = "") String IBAN,
-            @RequestParam(required = false, name = "balance", defaultValue = "") Double balance
+            @RequestParam(required = false, name = "balance", defaultValue = "") Double balance,
+            @RequestParam(required = false, name = "dateAdded", defaultValue = "") String dateAdded
     ) {
+        //Vérification des droits d'accès.
+        var isExternalUser = false;//TODO à revoir
+        if(isExternalUser && (!birthDate.equals("") || !passportNumber.equals("") || !phoneNumber.equals("")
+        || balance != null)) {
+            throw new AccessDeniedException();
+        }
+
         //Recherche des comptes.
         var accounts =  accountRepository.findAll(interval, offset, id, firstName, lastName, birthDate,
-                                                               country, passportNumber, phoneNumber, IBAN, balance);
+                                                               country, passportNumber, phoneNumber, IBAN, balance, dateAdded);
 
         //Transformation des entités comptes en vues puis ajout des liens d'actions.
         return accountAssembler.toCollectionModel(accountMapper.toView(accounts));
@@ -189,18 +208,5 @@ public class AccountController {
 
         //Transformation de l'entité compte en vue puis ajout des liens d'actions.
         return accountAssembler.toModel(accountMapper.toView(account));
-    }
-
-    /**
-     * Supprimer un compte bancaire.
-     *
-     * @param accountId    Identifiant du compte bancaire à supprimer.
-     */
-    @DeleteMapping(value = "{accountId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Transactional
-    public void delete(@PathVariable("accountId") UUID accountId) {
-        //Passage du compte à inactif si il est trouvé.
-        accountRepository.delete(accountId);
     }
 }

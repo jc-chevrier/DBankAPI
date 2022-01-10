@@ -45,11 +45,21 @@ public interface AccountRepository extends CrudRepository<Account, UUID> {
 
     /**
      * Chercher tous les comptes bancaires actifs
-     * avec un système de pagination.
-     *
+     * avec un système de pagination, et de filtrage
+     * en fonction des attributs.
      *
      * @param interval              Intervalle de pagination.
      * @param offset                Indice de début de pagination.
+     * @param id                    Filtre partiel sur l'identifiant du compte.
+     * @param firstName             Filtre partiel sur le prénom du client du compte.
+     * @param lastName              Filtre partiel sur le nom du client du compte.
+     * @param birthDate             Filtre partiel sur la date de naissance du client du compte.
+     * @param country               Filtre partiel sur le pays du client du compte.
+     * @param passportNumber        Filtre partiel sur le numéro de passeport du client du compte.
+     * @param phoneNumber           Filtre partiel sur le numéro de téléphone du client du compte.
+     * @param IBAN                  Filtre partiel sur l'IBAN du client du compte.
+     * @param balance               Filtre partiel sur le solde du client du compte.
+     * @param dateAdded             Filtre partiel sur la date d'ajout du compte.
      * @return List<Account>        Comptes bancaires actifs trouvés.
      */
     @Query(value = "SELECT * " +
@@ -63,16 +73,17 @@ public interface AccountRepository extends CrudRepository<Account, UUID> {
                     "AND PHONE_NUMBER LIKE CONCAT('%', :phoneNumber, '%') " +
                     "AND IBAN LIKE CONCAT('%', :IBAN, '%') " +
                     "AND BALANCE LIKE CONCAT('%', :balance, '%') " +
+                    "AND DATE_ADDED LIKE CONCAT('%', :dateAdded, '%') " +
                     "AND ACTIVE = TRUE " +
                     "LIMIT :interval " +
                     "OFFSET :offset",
             nativeQuery = true)
     List<Account> findAll(@Param("interval") Integer interval, @Param("offset") Integer offset,
-                          @Param("id") Integer id, @Param("firstName") String firstName,
+                          @Param("id") String id, @Param("firstName") String firstName,
                           @Param("lastName") String lastName, @Param("birthDate") String birthDate,
                           @Param("country") String country, @Param("passportNumber") String passportNumber,
                           @Param("phoneNumber") String phoneNumber, @Param("IBAN") String IBAN,
-                          @Param("balance") Double balance);
+                          @Param("balance") Double balance, @Param("dateAdded") String dateAdded);
 
     /**
      * Chercher un compte bancaire actif en précisant son identifiant.

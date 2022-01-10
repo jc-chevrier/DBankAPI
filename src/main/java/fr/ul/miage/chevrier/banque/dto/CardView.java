@@ -28,6 +28,8 @@ public class CardView {
 
     private Boolean blocked;
 
+    private Boolean expired;
+
     private Date dateAdded;
 
     private UUID accountId;

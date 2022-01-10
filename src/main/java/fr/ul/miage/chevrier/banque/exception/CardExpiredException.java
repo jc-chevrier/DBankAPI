@@ -8,16 +8,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.UUID;
 
 /**
- * Exception pour les opérations bancaires
- * confirmées.
+ * Exception pour les cartes bancaires
+ * expirées.
  */
 @ResponseStatus(HttpStatus.FORBIDDEN)
 @Getter
 @ToString
 @RequiredArgsConstructor
-public class OperationConfirmedException extends RuntimeException {
+public class CardExpiredException extends RuntimeException {
     private final UUID id;
-    public static OperationConfirmedException of(UUID id) {
-        return new OperationConfirmedException(id);
+    public static CardExpiredException of(UUID id) {
+        return new CardExpiredException(id);
     }
 }

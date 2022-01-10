@@ -12,7 +12,7 @@ import java.util.UUID;
  * Exception pour les cartes bancaires
  * bloquées.
  */
-@ResponseStatus(HttpStatus.UNAUTHORIZED)
+@ResponseStatus(HttpStatus.FORBIDDEN)
 @Getter
 @ToString
 @RequiredArgsConstructor

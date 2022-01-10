@@ -153,7 +153,7 @@ public class OperationController {
         operation.getFirstAccount().incrementBalance(operation.getAmount());
 
         //Sauvegarde des modifications.
-        operation = operationRepository.save(operation);
+        operationRepository.save(operation);
         accountRepository.save(operation.getFirstAccount());
     }
 
