@@ -21,7 +21,13 @@ public class AccountView {
 
     private String lastName;
 
+    private Date birthDate;
+
     private String country;
+
+    private String passportNumber;
+
+    private String phoneNumber;
 
     private String IBAN;
 
