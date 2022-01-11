@@ -1,0 +1,16 @@
+# curl -X POST
+#    -H "Content-Type: application/x-www-form-urlencoded"
+#    -d 'username=ineat-user&password=password&grant_type=password'
+#    -d 'client_id=ineat-web'
+#    -d 'client_secret=038c7378-c478-4c5c-a616-c1ddf294cdb7'
+#    "http://localhost:8180/auth/realms/ineat-realm/protocol/openid-connect/token"
+POST http://localhost:8089/auth/realms/DBankAPI/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+username=test2
+password=test2
+grant_type=test2
+client_id=PortalUser
+client_secret=038c7378-c478-4c5c-a616-c1ddf294cdb7
+
+###
+
