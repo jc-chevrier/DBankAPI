@@ -97,6 +97,7 @@ public class Configuration {
                     .and()
                     .authorizeRequests().antMatchers(HttpMethod.OPTIONS).authenticated()
                     .antMatchers("/").authenticated()
+                    .antMatchers("/dev_database/console").hasRole("admin")
                     .antMatchers("/test_database/console").hasRole("admin")
                     //TODO
                     .anyRequest().denyAll();
