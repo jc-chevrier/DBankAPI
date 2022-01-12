@@ -1,4 +1,6 @@
-![](doc/DBankAPI.png)
+<br>
+
+![Logo de de DBankAPI](doc/DBankAPI.png)
 
 API pour effectuer des échanges métier avec la `DBank`.
 
