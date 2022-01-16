@@ -8,6 +8,7 @@
         <version>2.5.5</version>
         <relativePath/>
     </parent>
+
     <groupId>fr.ul.miage.chevrier</groupId>
     <artifactId>dbank-api</artifactId>
     <version>1.0</version>
