@@ -68,8 +68,12 @@ la base de données est automatiquement peuplée avec des exemples d'opérations
 de cartes, et de comptes.
 
 ___
-### Conception
+### Conception et base de données
 
+Ci-après vous pouvez voir le diagramme de classes qui a été réalisé
+pour concevoir la ba se de données l'API;
+
+![Diagramme de classes DBankAPI](doc/class_diagram.png)
 
 ___
 ### Arborescenece
