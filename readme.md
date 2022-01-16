@@ -25,11 +25,11 @@ ____
 (si vous ne l'avez pas déjà).
 
 - Lancer le serveur Keycloak.
-Pour le lancer en local, aller dans le répertoire de Keycloak, et lancer `bin\standalone.bat`
+Pour le lancer en local, aller dans le répertoire de `Keycloak`, et lancer `bin\standalone.bat`
 ou `bin/standalone.sh` selon votre OS.
 
 - Importer sur Keycloak la configuration `keycloak/configuration.json`,
-présente sur le répertoire GitHub du projet.
+présente sur le répertoire `GitHub` du projet.
 
 - Créer des utilisateurs sur Keycloak,pour
 les différents rôles existants : `Admin`,
