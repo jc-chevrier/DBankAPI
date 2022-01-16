@@ -28,7 +28,7 @@ de carte etc.
 qui interrogent l'API pour différentes actions, telles que vérifier le code d'une carte ou retirer de l'argent
 sur un compte, voir les dernières oéprations, etc
 
-- `Merhant` : Marchand en français, ce rôle correspond aux accès des sites de e-commerce, qui communiquent avec l'API 
+- `Merhant` : marchand en français, ce rôle correspond aux accès des sites de e-commerce, qui communiquent avec l'API 
 pour vérifier les informations d'une carte ou encore réaliser des opérations bancaires / transactions sur une carte 
 avec l'accord de son propriétaire.
 
