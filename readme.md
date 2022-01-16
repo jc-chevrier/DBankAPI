@@ -24,9 +24,9 @@ Elle permet l'échange avec 4 types de rôle bien déterminés :
 effectue des actions sur ses données : virement, changement de numéro de téléphone, demande de nouveau compte ou 
 de carte etc.
 
-- `ATM` : GAB en français : Guichet Automatique Bancaire, ce rôle correspond aux accès des distributeurs automatiques
-qui interrogent l'API pour différentes actions telles que vérifier le code d'une carte ou retirer de l'argent
-sur un compte.
+- `ATM` : GAB en français : Guichet Automatique Bancaire, ce rôle correspond aux accès des distributeurs automatiques,
+qui interrogent l'API pour différentes actions, telles que vérifier le code d'une carte ou retirer de l'argent
+sur un compte, voir les dernières oéprations, etc
 
 - `Merhant` : Marchand en français, ce rôle correspond aux accès des sites de e-commerce, qui communiquent avec l'API 
 pour vérifier les informations d'une carte ou encore réaliser des opérations bancaires / transactions sur une carte 
