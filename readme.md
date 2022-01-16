@@ -18,22 +18,27 @@ ____
 ____
 ### Installation et exécution
 
-Télécharger et installer `Java 17`
+- Télécharger et installer `Java 17`
 (si vous ne l'avez pas déjà).
-
-Télécharger et installer `Keycloak`
+<br>
+<br>
+- Télécharger et installer `Keycloak`
 (si vous ne l'avez pas déjà).
-
-Lancer le serveur Keycloak.
+  <br>
+  <br>
+- Lancer le serveur Keycloak.
 Pour le lancer en local, dans le répertoire de Keycloak, lancer, `bin\standalone.bat`
 ou `bin/standalone.sh` selon votre OS.
-
-Importer sur Keycloak la configuration `keycloak/configuration.json`,
+  <br>
+  <br>
+- Importer sur Keycloak la configuration `keycloak/configuration.json`,
 présente sur le répertoire GitHub du projet.
-
-Créer des utilisateurs sur Keycloak,pour
+  <br>
+  <br>
+- Créer des utilisateurs sur Keycloak,pour
 les différents rôles existants : `Admin`,
 `Client`, `ATM`, `Merchant`.
-
-Lancer l'API avec les exécutables du projet :
+  <br>
+  <br>
+- Lancer l'API avec les exécutables du projet :
 `dbank_api.bat` ou`dbank_api.sh` selon votre OS.
