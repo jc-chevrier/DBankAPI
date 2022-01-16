@@ -10,12 +10,14 @@ CHEVRIER Jean-Christophe
 ____
 ### Description globale
 
-Cette API permet la communication avec la DBank ou Digital Bank,
+Cette API permet la communication avec la `DBank` ou `Digital Bank`,
 qui est une banque numérique fictive (inventée pour le projet).
+
+Elle peut être comparée à des applications telles que `Revolut.com`.
 
 Elle permet l'échange avec 4 types de rôle bien déterminés : 
 
-- `Admin` : rôle des personnes ou des logiciels de la `DBank` exercant des
+- `Admin` : rôle des personnes ou des logiciels de la `DBank` exerçant des
   actions sur les données de la banque sans aucunes limitations.
 
 - `Client` : rôle des clients ou des applications mobiles de la `DBank` via lesquelles un client
