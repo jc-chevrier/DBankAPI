@@ -66,3 +66,29 @@ les différents rôles existants : `Admin`,
 `dbank_api.bat` ou `dbank_api.sh` selon votre OS. Au lancement des exécutables,
 la base de données est automatiquement peuplée avec des exemples d'opérations,
 de cartes, et de comptes.
+
+___
+### Conception
+
+
+___
+### Arborescenece
+
+Les sources du projet sont réparties selon cette arborescence :
+
+      src/fr[...]/java
+          assembler/      Répertoire des classes implémentant HATEOAS dans le projet.
+          controller/     Répertoire des classes de traitement des requêtes HTTP en fonction 
+                          demandes, rôles, etc.
+          dto/            Répertoire des objets échangés entre l'API et les logiciels clients :
+                          saisies et vues ppour chaque entité.
+          entity/         Répertoire des entités / structures de données de la banque.
+          exception/      Répertoire des exceptions utilisées par les contrôleurs pour la bonne
+                          réponse aux demandes.
+          mapper/         Répertoire des classes de mapping entre les DTOs (saisies, vues) et les entités.
+          repository/     Répertoire des classes pour l'interrogation de la base de données H2.
+          security/       Répertoire des classes gérant la scéurirté dans le projet, référenciation des
+                          URIs de l'API par rôle, etc.
+          validator/      Répertoire des validateurs manuels des entités.
+___
+### Routes 
