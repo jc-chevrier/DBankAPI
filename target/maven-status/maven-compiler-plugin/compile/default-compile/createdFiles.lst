@@ -18,7 +18,6 @@ fr\ul\miage\chevrier\dbank_api\mapper\CardMapper.class
 fr\ul\miage\chevrier\dbank_api\mapper\AccountMapperImpl.class
 fr\ul\miage\chevrier\dbank_api\repository\AccountRepository.class
 fr\ul\miage\chevrier\dbank_api\dto\AccountInput.class
-fr\ul\miage\chevrier\dbank_api\validator\Main.class
 fr\ul\miage\chevrier\dbank_api\entity\Account.class
 fr\ul\miage\chevrier\dbank_api\validator\AccountValidator.class
 fr\ul\miage\chevrier\dbank_api\dto\CardIdentityInput.class
@@ -35,6 +34,7 @@ fr\ul\miage\chevrier\dbank_api\assembler\AccountAssembler.class
 fr\ul\miage\chevrier\dbank_api\controller\AccountController.class
 fr\ul\miage\chevrier\dbank_api\exception\CardBlockedException.class
 fr\ul\miage\chevrier\dbank_api\mapper\OperationMapperImpl.class
+fr\ul\miage\chevrier\dbank_api\dto\OperationCompleteView.class
 fr\ul\miage\chevrier\dbank_api\security\Configuration$KeycloakConfigurationAdapter.class
 fr\ul\miage\chevrier\dbank_api\exception\CardNotFoundException.class
 fr\ul\miage\chevrier\dbank_api\repository\CardRepository.class

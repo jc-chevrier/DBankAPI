@@ -203,15 +203,13 @@ public class OperationController extends BaseController {
         var operation = operationMapper.toEntity(operationInput);
 
         //Recherche du premier compte associé et levée d'une exception si le compte n'est pas trouvé.
-        var firstAccount = accountRepository.find(operationInput.getFirstAccountId())
-                                                     .orElseThrow(() -> new AccountNotFoundException(operationInput.getFirstAccountId()));
+        var firstAccount = findAccountOrThrowIfNotPresentOrNoAccess(operationInput.getFirstAccountId());
 
         //Si l'opération est un paiement par carte.
         //Recherche de la carte associée et levée d'une exception si la carte n'est pas trouvée.
         Card firstAccountCard = null;
         if(operationIsACardPayment) {
-            firstAccountCard = cardRepository.find(operationInput.getFirstAccountCardId())
-                                             .orElseThrow(() -> new CardNotFoundException(operationInput.getFirstAccountCardId()));
+            firstAccountCard = findCardOrThrowIfNotPresentOrNoAccess(operationInput.getFirstAccountCardId());
         }
 
         //Génération de l'identifiant de l'opération.

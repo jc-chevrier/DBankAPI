@@ -1,4 +1,3 @@
-C:\Users\chevr\OneDrive\Documents\professionnel\MASTER_2_MIAGE_SID\deploiement_passage_echelle_disponibilite\projet\DBankAPI\src\main\java\fr\ul\miage\chevrier\dbank_api\validator\Main.java
 C:\Users\chevr\OneDrive\Documents\professionnel\MASTER_2_MIAGE_SID\deploiement_passage_echelle_disponibilite\projet\DBankAPI\src\main\java\fr\ul\miage\chevrier\dbank_api\validator\AccountValidator.java
 C:\Users\chevr\OneDrive\Documents\professionnel\MASTER_2_MIAGE_SID\deploiement_passage_echelle_disponibilite\projet\DBankAPI\src\main\java\fr\ul\miage\chevrier\dbank_api\assembler\OperationAssembler.java
 C:\Users\chevr\OneDrive\Documents\professionnel\MASTER_2_MIAGE_SID\deploiement_passage_echelle_disponibilite\projet\DBankAPI\src\main\java\fr\ul\miage\chevrier\dbank_api\dto\AccountView.java
@@ -26,6 +25,7 @@ C:\Users\chevr\OneDrive\Documents\professionnel\MASTER_2_MIAGE_SID\deploiement_p
 C:\Users\chevr\OneDrive\Documents\professionnel\MASTER_2_MIAGE_SID\deploiement_passage_echelle_disponibilite\projet\DBankAPI\src\main\java\fr\ul\miage\chevrier\dbank_api\dto\OperationInput.java
 C:\Users\chevr\OneDrive\Documents\professionnel\MASTER_2_MIAGE_SID\deploiement_passage_echelle_disponibilite\projet\DBankAPI\src\main\java\fr\ul\miage\chevrier\dbank_api\exception\CardNotFoundException.java
 C:\Users\chevr\OneDrive\Documents\professionnel\MASTER_2_MIAGE_SID\deploiement_passage_echelle_disponibilite\projet\DBankAPI\src\main\java\fr\ul\miage\chevrier\dbank_api\dto\CardInput.java
+C:\Users\chevr\OneDrive\Documents\professionnel\MASTER_2_MIAGE_SID\deploiement_passage_echelle_disponibilite\projet\DBankAPI\src\main\java\fr\ul\miage\chevrier\dbank_api\dto\OperationCompleteView.java
 C:\Users\chevr\OneDrive\Documents\professionnel\MASTER_2_MIAGE_SID\deploiement_passage_echelle_disponibilite\projet\DBankAPI\src\main\java\fr\ul\miage\chevrier\dbank_api\dto\CardCodeInput.java
 C:\Users\chevr\OneDrive\Documents\professionnel\MASTER_2_MIAGE_SID\deploiement_passage_echelle_disponibilite\projet\DBankAPI\src\main\java\fr\ul\miage\chevrier\dbank_api\Application.java
 C:\Users\chevr\OneDrive\Documents\professionnel\MASTER_2_MIAGE_SID\deploiement_passage_echelle_disponibilite\projet\DBankAPI\src\main\java\fr\ul\miage\chevrier\dbank_api\dto\OperationView.java
