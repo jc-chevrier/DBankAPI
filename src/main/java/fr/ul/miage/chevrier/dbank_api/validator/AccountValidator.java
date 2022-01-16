@@ -15,14 +15,21 @@ import java.util.Set;
 @Service
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class AccountValidator {
+    //Validateur.
     private Validator validator;
 
     AccountValidator(Validator validator) {
         this.validator = validator;
     }
 
-    public void validate(AccountInput input) {
-        Set<ConstraintViolation<AccountInput>> violations = validator.validate(input);
+    /**
+     * Valider un compte bancaire et levée d'une
+     * exception si une contrainte n'est pas respectée.
+     *
+     * @param accountInput        Saisies du compte bancaire à valider.
+     */
+    public void validate(AccountInput accountInput) {
+        Set<ConstraintViolation<AccountInput>> violations = validator.validate(accountInput);
         if (!violations.isEmpty()) {
             throw new LayerConstraintViolationException(violations);
         }

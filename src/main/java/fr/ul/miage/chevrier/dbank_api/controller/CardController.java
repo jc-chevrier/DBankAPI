@@ -5,6 +5,7 @@ import fr.ul.miage.chevrier.dbank_api.dto.CardCodeInput;
 import fr.ul.miage.chevrier.dbank_api.dto.CardIdentityInput;
 import fr.ul.miage.chevrier.dbank_api.dto.CardInput;
 import fr.ul.miage.chevrier.dbank_api.dto.CardView;
+import fr.ul.miage.chevrier.dbank_api.entity.Account;
 import fr.ul.miage.chevrier.dbank_api.entity.Card;
 import fr.ul.miage.chevrier.dbank_api.exception.*;
 import fr.ul.miage.chevrier.dbank_api.mapper.CardMapper;
@@ -65,6 +66,25 @@ public class CardController extends BaseController {
                                   return true;
                               })
                               .orElseThrow(() -> new CardNotFoundException(cardId));
+    }
+
+    /**
+     * Chercher un compte bancaire et levée d'une
+     * exception si le compte n'est pas trouvé, ou
+     * que les droits sont insuffisants.
+     *
+     * @param accountId     Identifiant du compte bancaire cherché.
+     * @return Account      Compte bancaire cherché.
+     */
+    private Account findAccountOrThrowIfNotPresentOrNoAccess(UUID accountId) {
+        return accountRepository.find(accountId)
+                .filter((account) -> {
+                    if(!account.getSecret().contains(getFilterSecretByCurrentUserRole())) {
+                        throw new AccessDeniedException();
+                    }
+                    return true;
+                })
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
     }
 
     /**
@@ -157,8 +177,7 @@ public class CardController extends BaseController {
         var card = cardMapper.toEntity(cardInput);
 
         //Recherche du compte associé et levée d'une exception si le compte n'est pas trouvé.
-        var account = accountRepository.find(cardInput.getAccountId())
-                                       .orElseThrow(() -> new AccountNotFoundException(cardInput.getAccountId()));
+        var account = findAccountOrThrowIfNotPresentOrNoAccess(cardInput.getAccountId());
 
         //Génération de l'identifiant de la carte.
         card.setId(UUID.randomUUID());
@@ -288,8 +307,7 @@ public class CardController extends BaseController {
                 throw new CardExpiredException(cardId);
             } else {
                 //Recherche du compte associé et levée d'une exception si le compte n'est pas trouvé.
-                var account = accountRepository.find(cardInput.getAccountId())
-                                               .orElseThrow(() -> new AccountNotFoundException(cardInput.getAccountId()));
+                var account = findAccountOrThrowIfNotPresentOrNoAccess(cardInput.getAccountId());
 
                 //Récupération des informations saisies.
                 card.setNumber(cardInput.getNumber());
@@ -374,8 +392,7 @@ public class CardController extends BaseController {
                 }
                 if (cardInput.getAccountId() != null) {
                     //Recherche du compte associé et levée d'une exception si le compte n'est pas trouvé.
-                    var account = accountRepository.find(cardInput.getAccountId())
-                                                    .orElseThrow(() -> new AccountNotFoundException(cardInput.getAccountId()));
+                    var account = findAccountOrThrowIfNotPresentOrNoAccess(cardInput.getAccountId());
                     //Association avec le compte.
                     card.setAccount(account);
                 }

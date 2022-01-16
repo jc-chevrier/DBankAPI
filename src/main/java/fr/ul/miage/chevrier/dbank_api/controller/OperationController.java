@@ -3,7 +3,9 @@ package fr.ul.miage.chevrier.dbank_api.controller;
 import fr.ul.miage.chevrier.dbank_api.assembler.OperationAssembler;
 import fr.ul.miage.chevrier.dbank_api.dto.OperationInput;
 import fr.ul.miage.chevrier.dbank_api.dto.OperationView;
+import fr.ul.miage.chevrier.dbank_api.entity.Account;
 import fr.ul.miage.chevrier.dbank_api.entity.Card;
+import fr.ul.miage.chevrier.dbank_api.entity.Operation;
 import fr.ul.miage.chevrier.dbank_api.exception.*;
 import fr.ul.miage.chevrier.dbank_api.mapper.OperationMapper;
 import fr.ul.miage.chevrier.dbank_api.repository.AccountRepository;
@@ -24,13 +26,12 @@ import java.util.UUID;
 
 /**
  * Contrôleur pour la gestion des opérations
- * sur les comptes bancaires des clients de
- * la banque.
+ * bancaires.
  */
 @RestController
 @RequestMapping(value = "operations", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
-public class OperationController {
+public class OperationController extends BaseController {
     //Répertoire pour l'interrogation des comptes bancaires
     //en base de données.
     private final AccountRepository accountRepository;
@@ -50,6 +51,63 @@ public class OperationController {
     //Validateur pour assurer la cohérence et
     //l'intégrité des comptes bancaires gérés.
     private final OperationValidator operationValidator;
+
+    /**
+     * Chercher une opération bancaire et levée d'une
+     * exception si l'opération n'est pas trouvée, ou
+     * que les droits sont insuffisants.
+     *
+     * @param operationId     Identifiant de l'opération bancaire cherchée.
+     * @return operation      Opération bancaire cherchée.
+     */
+    private Operation findOrThrowIfNotPresentOrNoAccess(UUID operationId) {
+        return operationRepository.find(operationId)
+                                    .filter((operation) -> {
+                                        if(!operation.getFirstAccount().getSecret().contains(getFilterSecretByCurrentUserRole())) {
+                                            throw new AccessDeniedException();
+                                        }
+                                        return true;
+                                    })
+                                    .orElseThrow(() -> new OperationNotFoundException(operationId));
+    }
+
+    /**
+     * Chercher une carte bancaire et levée d'une
+     * exception si la carte n'est pas trouvée, ou
+     * que les droits sont insuffisants.
+     *
+     * @param cardId     Identifiant de la carte bancaire cherché.
+     * @return Card      Carte bancaire cherchée.
+     */
+    private Card findCardOrThrowIfNotPresentOrNoAccess(UUID cardId) {
+        return cardRepository.find(cardId)
+                .filter((card) -> {
+                    if(!card.getAccount().getSecret().contains(getFilterSecretByCurrentUserRole())) {
+                        throw new AccessDeniedException();
+                    }
+                    return true;
+                })
+                .orElseThrow(() -> new CardNotFoundException(cardId));
+    }
+
+    /**
+     * Chercher un compte bancaire et levée d'une
+     * exception si le compte n'est pas trouvé, ou
+     * que les droits sont insuffisants.
+     *
+     * @param accountId     Identifiant du compte bancaire cherché.
+     * @return Account      Compte bancaire cherché.
+     */
+    private Account findAccountOrThrowIfNotPresentOrNoAccess(UUID accountId) {
+        return accountRepository.find(accountId)
+                .filter((account) -> {
+                    if(!account.getSecret().contains(getFilterSecretByCurrentUserRole())) {
+                        throw new AccessDeniedException();
+                    }
+                    return true;
+                })
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
+    }
 
     /**
      * Obtenir toutes les opérations bancaires.
@@ -76,7 +134,7 @@ public class OperationController {
             @RequestParam(required = false, name = "offset", defaultValue = "0") Integer offset,
             @RequestParam(required = false, name = "id", defaultValue = "") String id,
             @RequestParam(required = false, name = "label", defaultValue = "") String label,
-            @RequestParam(required = false, name = "amount", defaultValue = "") Double amount,
+            @RequestParam(required = false, name = "amount", defaultValue = "") String amount,
             @RequestParam(required = false, name = "secondAccountName", defaultValue = "") String secondAccountName,
             @RequestParam(required = false, name = "secondAccountCountry", defaultValue = "") String secondAccountCountry,
             @RequestParam(required = false, name = "secondAccountIBAN", defaultValue = "") String secondAccountIBAN,
@@ -86,12 +144,12 @@ public class OperationController {
             @RequestParam(required = false, name = "dateAdded", defaultValue = "") String dateAdded,
             @RequestParam(required = false, name = "firstAccountId", defaultValue = "") String firstAccountId,
             @RequestParam(required = false, name = "firstAccountCardId", defaultValue = "") String firstAccountCardId) {
-        //Utilisateur et accès.
-        var user = SecurityContextHolder.getContext().getAuthentication();
-        var userIsAdmin = user.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_" + Role.ADMIN.getLabel()));
+        //Récupération des données de l'utilisateur connecté.
+        var currentUserRole = getCurrentUserRole();
+        var filterSecretByCurrentUserRole = getFilterSecretByCurrentUserRole();
 
         //Vérification des droits d'accès.
-        if(!userIsAdmin && (amount != null)) {
+        if(!currentUserIs(Role.ADMIN) && (amount != null)) {
             //Pas de droit d'accès et levée d'une exception.
             throw new AccessDeniedException();
         }
@@ -99,10 +157,11 @@ public class OperationController {
         //Recherche des opérations à partir des informations saisies.
         var operations =  operationRepository.findAll(interval, offset, id.replaceAll("-", ""), label, amount,
                                                       secondAccountName, secondAccountCountry, secondAccountIBAN, rate,
-                                                      category, confirmed, dateAdded, firstAccountId, firstAccountCardId);
+                                                      category, confirmed, dateAdded, firstAccountId, firstAccountCardId,
+                                                      filterSecretByCurrentUserRole);
 
         //Transformation des entités opérations en vues puis ajout des liens d'actions.
-        return operationAssembler.toCollectionModel(operationMapper.toView(operations));
+        return operationAssembler.toCollectionModel(operationMapper.toView(operations, currentUserRole));
     }
 
     /**
@@ -113,12 +172,15 @@ public class OperationController {
      */
     @GetMapping(value = "{operationId}")
     public EntityModel<OperationView> find(@PathVariable("operationId") UUID operationId) {
+        //Récupération des données de l'utilisateur connecté.
+        var currentUserRole = getCurrentUserRole();
+
         //Recherche de l'oépration et levée d'une exception si l'opération n'est pas trouvée.
         var operation =  operationRepository.find(operationId)
                                                        .orElseThrow(() -> new OperationNotFoundException(operationId));
 
         //Transformation de l'entité opération en vue puis ajout des liens d'actions.
-        return operationAssembler.toModel(operationMapper.toView(operation));
+        return operationAssembler.toModel(operationMapper.toView(operation, currentUserRole));
     }
 
     /**
@@ -131,6 +193,9 @@ public class OperationController {
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
     public EntityModel<OperationView> create(@RequestBody @Valid OperationInput operationInput) {
+        //Récupération des données de l'utilisateur connecté.
+        var currentUserRole = getCurrentUserRole();
+
         //Type d'opération : via carte ou non ?
         boolean operationIsACardPayment = operationInput.getFirstAccountCardId() != null;
 
@@ -161,14 +226,11 @@ public class OperationController {
             operation.setFirstAccountCard(firstAccountCard);
         }
 
-        //TODO check pays opération
-        //TODO check paramètres carte
-
         //Sauvegarde de la nouvelle opération.
         operation = operationRepository.save(operation);
 
         //Transformation de l'entité opération en vue puis ajout des liens d'actions.
-        return operationAssembler.toModel(operationMapper.toView(operation));
+        return operationAssembler.toModel(operationMapper.toView(operation, currentUserRole));
     }
 
     /**
@@ -180,9 +242,12 @@ public class OperationController {
     @PostMapping("/{operationId}/confirm")
     @Transactional
     public void confirm(@PathVariable("operationId") UUID operationId) {
-        //Recherche de l'opération et levée d'une exception si l'opération n'est pas trouvée.
-        var operation =  operationRepository.find(operationId)
-                                                       .orElseThrow(() -> new OperationNotFoundException(operationId));
+        //Récupération des données de l'utilisateur connecté.
+        var currentUserRole = getCurrentUserRole();
+
+        //Recherche de l'opération et levée d'une exception si l'opération n'est pas trouvée,.
+        //ou que les droits sont insuffisants.
+        var operation = findOrThrowIfNotPresentOrNoAccess(operationId);
 
         //Modification de l'opération.
         operation.setConfirmed(true);
@@ -207,9 +272,12 @@ public class OperationController {
     @Transactional
     public EntityModel<OperationView> update(@PathVariable("operationId") UUID operationId,
                                              @RequestBody @Valid OperationInput operationInput) {
+        //Récupération des données de l'utilisateur connecté.
+        var currentUserRole = getCurrentUserRole();
+
         //Recherche de l'entité et levée d'une exception si l'entité n'est pas trouvée.
         var operation = operationRepository.find(operationId)
-                                                      .orElseThrow(() -> new OperationNotFoundException(operationId));
+                                           .orElseThrow(() -> new OperationNotFoundException(operationId));
 
         //Vérification du droit de modification.
         //Si l'opération a été confirmée.
@@ -251,14 +319,11 @@ public class OperationController {
                 operation.setFirstAccountCard(null);
             }
 
-            //TODO check pays opération
-            //TODO check paramètres carte
-
             //Sauvegarde des modifications.
             operation = operationRepository.save(operation);
 
             //Transformation de l'entité en vue puis ajout des liens d'actions.
-            return operationAssembler.toModel(operationMapper.toView(operation));
+            return operationAssembler.toModel(operationMapper.toView(operation, currentUserRole));
         }
     }
 
@@ -274,9 +339,12 @@ public class OperationController {
     @Transactional
     public EntityModel<OperationView> updatePartial(@PathVariable("operationId") UUID operationId,
                                                   @RequestBody OperationInput operationInput) {
+        //Récupération des données de l'utilisateur connecté.
+        var currentUserRole = getCurrentUserRole();
+
         //Recherche de l'opération et levée d'une exception si l'oépration n'est pas trouvée.
         var operation = operationRepository.find(operationId)
-                                                      .orElseThrow(() -> new OperationNotFoundException(operationId));
+                                            .orElseThrow(() -> new OperationNotFoundException(operationId));
 
         //Vérification du droit de modification.
         //Si d'autre champ autre que la catégorie ont
@@ -328,14 +396,11 @@ public class OperationController {
         operation.getSecondAccountCountry(), operation.getSecondAccountIBAN(), operation.getCategory(), operation.getFirstAccount().getId(),
         operation.getFirstAccountCard() != null ? operation.getFirstAccountCard().getId() : null));
 
-        //TODO check pays opération
-        //TODO check paramètres carte
-
         //Sauvegarde des modifications.
         operation = operationRepository.save(operation);
 
         //Transformation de l'entité en vue puis ajout des liens d'actions.
-        return operationAssembler.toModel(operationMapper.toView(operation));
+        return operationAssembler.toModel(operationMapper.toView(operation, currentUserRole));
     }
 
     /**

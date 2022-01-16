@@ -29,7 +29,7 @@ public class OperationView {
 
     private Double rate;
 
-    private String category;
+    private Boolean confirmed;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private Date dateAdded = new Date();

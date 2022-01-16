@@ -13,14 +13,22 @@ import java.util.Set;
  */
 @Service
 public class CardValidator {
+    //Validateur.
     private Validator validator;
 
     CardValidator(Validator validator) {
         this.validator = validator;
     }
 
-    public void validate(CardInput input) {
-        Set<ConstraintViolation<CardInput>> violations = validator.validate(input);
+    /**
+     * Valider une opération bancaire et levée
+     * d'une exception si une contrainte n'est pas
+     * respectée.
+     *
+     * @param cardInput        Saisies de la carte bancaire à valider.
+     */
+    public void validate(CardInput cardInput) {
+        Set<ConstraintViolation<CardInput>> violations = validator.validate(cardInput);
         if (!violations.isEmpty()) {
             throw new LayerConstraintViolationException(violations);
         }

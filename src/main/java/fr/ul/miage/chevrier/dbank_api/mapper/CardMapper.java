@@ -15,14 +15,13 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface CardMapper {
     /**
-     * Transformer une entité d'une carte en une
-     * vue de la carte, en fonction d'un rôle.
+     * Transformer une entité d'une carte bancaire
+     * en une vue de la carte, en fonction d'un rôle.
      *
-     * @param card              Entité de la carte.
+     * @param card              Entité de la carte bancaire.
      * @param role              Rôle.
-     * @return CardView         Vue de la carte.
+     * @return CardView         Vue de la carte bancaire.
      */
-    @Mapping(source = "account.id", target = "accountId")
     default CardView toView(Card card, Role role) {
         if(role == Role.ADMIN) {
             return new CardCompleteView(card.getId(), card.getNumber(), card.getCryptogram(), card.getExpirationDate(),
@@ -36,12 +35,12 @@ public interface CardMapper {
     }
 
     /**
-     * Transformer des entités de carte en des vues
-     * des cartes, en fonction d'un rôle.
+     * Transformer des entités de carte bancaire
+     * en des vues des cartes, en fonction d'un rôle.
      *
-     * @param cards                 Entités des cartes.
+     * @param cards                 Entités des cartes bancaires.
      * @param role                  Rôle.
-     * @return List<CardView>       Vues des cartes.
+     * @return List<CardView>       Vues des cartes bancaires.
      */
     default List<CardView> toView(Iterable<Card> cards, Role role) {
         var cardsViews = new ArrayList<CardView>();
@@ -53,8 +52,8 @@ public interface CardMapper {
      * Transformer des saisies d'une carte en une
      * entité de la carte.
      *
-     * @param cardInput         Saisies de la carte.
-     * @return Card             Entité de la carte.
+     * @param cardInput         Saisies de la carte bancaire.
+     * @return Card             Entité de la carte bancaire.
      */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "dateAdded", ignore = true)

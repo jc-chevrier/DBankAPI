@@ -12,8 +12,7 @@ import java.util.UUID;
 
 /**
  * Répertoire pour l'interrogation de la base de
- * données concernant les opérations sur les
- * comptes bancaires.
+ * données concernant les opérations bancaires.
  */
 @Repository
 public interface OperationRepository extends CrudRepository<Operation, UUID> {
@@ -67,30 +66,34 @@ public interface OperationRepository extends CrudRepository<Operation, UUID> {
      * @return List<Operation>          Opérations actives trouvées.
      */
     @Query(value = "SELECT * " +
-                    "FROM OPERATION " +
-                    "WHERE ID LIKE CONCAT('%', :id, '%') " +
-                    "AND LOWER(LABEL) LIKE LOWER(CONCAT('%', :label, '%')) " +
-                    "AND AMOUNT LIKE CONCAT('%', :amount, '%') " +
-                    "AND LOWER(SECOND_ACCOUNT_NAME) LIKE LOWER(CONCAT('%', :secondAccountName, '%')) " +
-                    "AND LOWER(SECOND_ACCOUNT_COUNTRY) LIKE LOWER(CONCAT('%', :secondAccountCountry, '%')) " +
-                    "AND LOWER(SECOND_ACCOUNT_IBAN) LIKE LOWER(CONCAT('%', :secondAccountIBAN, '%')) " +
-                    "AND RATE LIKE CONCAT('%', :rate, '%') " +
-                    "AND LOWER(CATEGORY) LIKE LOWER(CONCAT('%', :category, '%')) " +
-                    "AND CONFIRMED LIKE CONCAT('%', :confirmed, '%') " +
-                    "AND TO_CHAR(DATE_ADDED, 'yyyy-MM') LIKE CONCAT('%', :dateAdded, '%') " +
-                    "AND ACTIVE = TRUE " +
-                    "AND LOWER(FIRST_ACCOUNT_ID) LIKE LOWER(CONCAT('%', :firstAccountId, '%')) " +
-                    "AND LOWER(FIRST_ACCOUNT_CARD_ID) LIKE LOWER(CONCAT('%', :firstAccountCardId, '%')) " +
+                    "FROM OPERATION AS O " +
+                    "INNER JOIN ACCOUNT AS FA " +
+                    "ON FA.ID = O.FIRST_ACCOUNT_ID " +
+                    "WHERE O.ID LIKE CONCAT('%', :id, '%') " +
+                    "AND LOWER(O.LABEL) LIKE LOWER(CONCAT('%', :label, '%')) " +
+                    "AND O.AMOUNT LIKE CONCAT('%', :amount, '%') " +
+                    "AND LOWER(O.SECOND_ACCOUNT_NAME) LIKE LOWER(CONCAT('%', :secondAccountName, '%')) " +
+                    "AND LOWER(O.SECOND_ACCOUNT_COUNTRY) LIKE LOWER(CONCAT('%', :secondAccountCountry, '%')) " +
+                    "AND LOWER(O.SECOND_ACCOUNT_IBAN) LIKE LOWER(CONCAT('%', :secondAccountIBAN, '%')) " +
+                    "AND O.RATE LIKE CONCAT('%', :rate, '%') " +
+                    "AND LOWER(O.CATEGORY) LIKE LOWER(CONCAT('%', :category, '%')) " +
+                    "AND O.CONFIRMED LIKE CONCAT('%', :confirmed, '%') " +
+                    "AND TO_CHAR(O.DATE_ADDED, 'yyyy-MM') LIKE CONCAT('%', :dateAdded, '%') " +
+                    "AND O.ACTIVE = TRUE " +
+                    "AND LOWER(O.FIRST_ACCOUNT_ID) LIKE LOWER(CONCAT('%', :firstAccountId, '%')) " +
+                    "AND LOWER(O.FIRST_ACCOUNT_CARD_ID) LIKE LOWER(CONCAT('%', :firstAccountCardId, '%')) " +
+                    "AND LOWER(FA.SECRET) LIKE LOWER(CONCAT('%', :firstAccountSecret, '%')) " +
                     "LIMIT :interval " +
                     "OFFSET :offset",
             nativeQuery = true)
     List<Operation> findAll(@Param("interval") Integer interval, @Param("offset") Integer offset,
                             @Param("id") String id, @Param("label") String label,
-                            @Param("amount") Double amount, @Param("secondAccountName") String secondAccountName,
+                            @Param("amount") String amount, @Param("secondAccountName") String secondAccountName,
                             @Param("secondAccountCountry") String secondAccountCountry, @Param("secondAccountIBAN") String secondAccountIBAN,
                             @Param("rate") Double rate, @Param("category") String category,
                             @Param("confirmed") Boolean confirmed, @Param("dateAdded") String dateAdded,
-                            @Param("firstAccountId") String firstAccountId, @Param("firstAccountCardId") String firstAccountCardId);
+                            @Param("firstAccountId") String firstAccountId, @Param("firstAccountCardId") String firstAccountCardId,
+                            @Param("firstAccountSecret") String firstAccountSecret);
 
     /**
      * Chercher une opération bancaire active en précisant son identifiant.
