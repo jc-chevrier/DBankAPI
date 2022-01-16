@@ -63,7 +63,7 @@ les différents rôles existants : `Admin`,
 `Client`, `ATM`, `Merchant`.
 
 - Lancer l'API avec les exécutables du projet :
-`dbank_api.bat` ou `dbank_api.sh` selon votre OS. Au lancement des exécutables,
+`dbank_api.bat` ou `dbank_api.sh` selon votre OS (les exécuter dans leur répertoire respectif). Au lancement des exécutables,
 la base de données est automatiquement peuplée avec des exemples d'opérations,
 de cartes, et de comptes.
 
