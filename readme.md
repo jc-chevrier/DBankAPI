@@ -21,7 +21,6 @@ ____
 - Télécharger et installer `Java 17`
 (si vous ne l'avez pas déjà).
 <br>
-<br>
 - Télécharger et installer `Keycloak`
 (si vous ne l'avez pas déjà).
 <br>
