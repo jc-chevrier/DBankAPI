@@ -18,7 +18,7 @@ Cetet banque numérique `DBank` peut être comparée à des applications telles 
 Elle permet l'échange avec 4 types de rôle bien déterminés : 
 
 - `Admin` : rôle des personnes ou des logiciels de la `DBank` exerçant des
-  actions sur les données de la banque sans aucunes limitations.
+  actions sur les données de la banque, sans aucunes limitations.
 
 - `Client` : rôle des clients ou des applications mobiles de la `DBank` via lesquelles un client
 effectue des actions sur ses données : virement, changement de numéro de téléphone, demande de nouveau compte ou 
