@@ -95,11 +95,44 @@ public class Configuration {
 
                     //Restrictions des accès aux routes par rôle.
                     .and()
-                    .authorizeRequests().antMatchers(HttpMethod.OPTIONS).authenticated()
+                    .authorizeRequests()
+
+                    //Il faut juste être authentifié pour accéder à la route d'accueil,
+                    //ou pour utiliser la méthode HTTP OPTIONS.
+                    .antMatchers(HttpMethod.OPTIONS).authenticated()
                     .antMatchers("/").authenticated()
-                    .antMatchers("/dev_database/console").hasRole("admin")
-                    .antMatchers("/test_database/console").hasRole("admin")
-                    //TODO
+
+                    //Droits des admins sur les consoles des bases de données de dev et de test.
+                    .antMatchers("/dev_database/console/**").anonymous()//TODO
+                    .antMatchers("/test_database/console/**").hasRole(Role.ADMIN.getLabel())
+
+
+                    //Droits des admins, clients, ATMs, et marchands sur les comptes.
+                    .antMatchers(HttpMethod.GET, "/accounts").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel(), Role.ATM.getLabel())
+                    .antMatchers(HttpMethod.GET, "/accounts/*").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel(), Role.ATM.getLabel())
+                    .antMatchers(HttpMethod.POST, "/accounts").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel())
+                    .antMatchers(HttpMethod.PUT, "/accounts/*").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel())
+                    .antMatchers(HttpMethod.PATCH, "/accounts/*").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel())
+
+                    //Droits des admins, clients, ATMs, et marchands sur les cartes.
+                    .antMatchers(HttpMethod.GET, "/cards").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel())
+                    .antMatchers(HttpMethod.GET, "/cards/{cardId}").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel())
+                    .antMatchers(HttpMethod.POST, "/cards").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel())
+                    .antMatchers(HttpMethod.POST, "/cards/*/code/check").hasAnyRole(Role.ADMIN.getLabel(), Role.ATM.getLabel())
+                    .antMatchers(HttpMethod.POST, "/cards/identity/check").hasAnyRole(Role.ADMIN.getLabel(), Role.MERCHANT.getLabel())
+                    .antMatchers(HttpMethod.POST, "/cards/*/expire").hasAnyRole(Role.ADMIN.getLabel())
+                    .antMatchers(HttpMethod.PUT, "/cards/*").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel())
+                    .antMatchers(HttpMethod.PATCH, "/cards/*").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel())
+
+                    //Droits des admins, clients, ATMs, et marchands sur les opérations.
+                    .antMatchers(HttpMethod.GET, "/operations").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel(), Role.ATM.getLabel())
+                    .antMatchers(HttpMethod.GET, "/operations/*").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel(), Role.ATM.getLabel(), Role.MERCHANT.getLabel())
+                    .antMatchers(HttpMethod.POST, "/operations").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel(), Role.ATM.getLabel())
+                    .antMatchers(HttpMethod.POST, "/operations/*/confirm").hasAnyRole(Role.ADMIN.getLabel())
+                    .antMatchers(HttpMethod.PUT, "/operations/*").hasAnyRole(Role.ADMIN.getLabel())
+                    .antMatchers(HttpMethod.PATCH, "/operations/*").hasAnyRole(Role.ADMIN.getLabel())
+                    .antMatchers(HttpMethod.DELETE, "/operations/*").hasAnyRole(Role.ADMIN.getLabel(), Role.MERCHANT.getLabel())
+
                     .anyRequest().denyAll();
         }
     }

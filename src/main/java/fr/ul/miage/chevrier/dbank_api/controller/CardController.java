@@ -5,10 +5,12 @@ import fr.ul.miage.chevrier.dbank_api.dto.CardCodeInput;
 import fr.ul.miage.chevrier.dbank_api.dto.CardIdentityInput;
 import fr.ul.miage.chevrier.dbank_api.dto.CardInput;
 import fr.ul.miage.chevrier.dbank_api.dto.CardView;
+import fr.ul.miage.chevrier.dbank_api.entity.Card;
 import fr.ul.miage.chevrier.dbank_api.exception.*;
 import fr.ul.miage.chevrier.dbank_api.mapper.CardMapper;
 import fr.ul.miage.chevrier.dbank_api.repository.AccountRepository;
 import fr.ul.miage.chevrier.dbank_api.repository.CardRepository;
+import fr.ul.miage.chevrier.dbank_api.security.Role;
 import fr.ul.miage.chevrier.dbank_api.validator.CardValidator;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
@@ -23,13 +25,13 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Contrôleur pour la gestion des cartes des
- * comptes bancaires des clients de la banque.
+ * Contrôleur pour la gestion des cartes
+ * bancaires.
  */
 @RestController
 @RequestMapping(value = "cards", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
-public class CardController {
+public class CardController extends BaseController {
     //Répertoire pour l'interrogation des cartes bancaires
     //en base de données.
     private final CardRepository cardRepository;
@@ -45,6 +47,25 @@ public class CardController {
     //Validateur pour assurer la cohérence et l'intégrité
     //des cartes bancaires gérées.
     private final CardValidator cardValidator;
+
+    /**
+     * Chercher une carte bancaire et levée d'une
+     * exception si la carte n'est pas trouvée, ou
+     * que les droits sont insuffisants.
+     *
+     * @param cardId     Identifiant de la carte bancaire cherché.
+     * @return Card      Carte bancaire cherchée.
+     */
+    private Card findOrThrowIfNotPresentOrNoAccess(UUID cardId) {
+        return cardRepository.find(cardId)
+                              .filter((card) -> {
+                                  if(!card.getAccount().getSecret().contains(getFilterSecretByCurrentUserRole())) {
+                                      throw new AccessDeniedException();
+                                  }
+                                  return true;
+                              })
+                              .orElseThrow(() -> new CardNotFoundException(cardId));
+    }
 
     /**
      * Obtenir toutes les cartes bancaires.
@@ -73,7 +94,7 @@ public class CardController {
             @RequestParam(required = false, name = "number", defaultValue = "") String number,
             @RequestParam(required = false, name = "cryptogram", defaultValue = "") String cryptogram,
             @RequestParam(required = false, name = "expirationDate", defaultValue = "") String expirationDate,
-            @RequestParam(required = false, name = "ceiling", defaultValue = "") Double ceiling,
+            @RequestParam(required = false, name = "ceiling", defaultValue = "") String ceiling,
             @RequestParam(required = false, name = "virtual", defaultValue = "") Boolean virtual,
             @RequestParam(required = false, name = "localization", defaultValue = "") Boolean localization,
             @RequestParam(required = false, name = "contactless", defaultValue = "") Boolean contactless,
@@ -81,20 +102,23 @@ public class CardController {
             @RequestParam(required = false, name = "expired", defaultValue = "") Boolean expired,
             @RequestParam(required = false, name = "dateAdded", defaultValue = "") String dateAdded,
             @RequestParam(required = false, name = "accountId", defaultValue = "") String accountId) {
+        //Récupération des données de l'utilisateur connecté.
+        var currentUserRole = getCurrentUserRole();
+        var filterSecretByCurrentUserRole = getFilterSecretByCurrentUserRole();
+
         //Vérification des droits d'accès.
-        var isExternalUser = false;//TODO à revoir
-        if(isExternalUser && (!cryptogram.equals("") || !expirationDate.equals("") || !ceiling.equals(""))) {
+        if(!currentUserIs(Role.ADMIN) && (!cryptogram.equals("") || !expirationDate.equals("") || !ceiling.equals(""))) {
             //Pas de droit d'accès et levée d'une exception.
             throw new AccessDeniedException();
         }
 
         //Recherche des cartes.
-        var cards =  cardRepository.findAll(interval, offset, id, number, cryptogram, expirationDate, ceiling,
-                                                        virtual, localization, contactless, blocked, expired, dateAdded,
-                                                        accountId);
+        var cards =  cardRepository.findAll(interval, offset, id.replaceAll("-", ""), number, cryptogram, expirationDate, ceiling,
+                                            virtual, localization, contactless, blocked, expired, dateAdded,
+                                            accountId, filterSecretByCurrentUserRole);
 
         //Transformation des entités cartes en vues puis ajout des liens d'actions.
-        return cardAssembler.toCollectionModel(cardMapper.toView(cards));
+        return cardAssembler.toCollectionModel(cardMapper.toView(cards, currentUserRole));
     }
 
     /**
@@ -105,11 +129,15 @@ public class CardController {
      */
     @GetMapping(value = "{cardId}")
     public EntityModel<CardView> find(@PathVariable("cardId") UUID cardId) {
-        //Recherche de la carte et levée d'une exception si la carte n'est pas trouvée.
-        var card =  cardRepository.find(cardId).orElseThrow(() -> CardNotFoundException.of(cardId));
+        //Récupération des données de l'utilisateur connecté.
+        var currentUserRole = getCurrentUserRole();
+
+        //Recherche de la carte et levée d'une exception si la carte n'est pas trouvée,
+        //ou que les droits sont insuffisants.
+        var card = findOrThrowIfNotPresentOrNoAccess(cardId);
 
         //Transformation de l'entité carte en vue puis ajout des liens d'actions.
-        return cardAssembler.toModel(cardMapper.toView(card));
+        return cardAssembler.toModel(cardMapper.toView(card, currentUserRole));
     }
 
     /**
@@ -122,15 +150,21 @@ public class CardController {
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
     public EntityModel<CardView> create(@RequestBody @Valid CardInput cardInput) {
+        //Récupération des données de l'utilisateur connecté.
+        var currentUserRole = getCurrentUserRole();
+
         ///Création de la nouvelle carte à partir des informations saisies.
         var card = cardMapper.toEntity(cardInput);
 
         //Recherche du compte associé et levée d'une exception si le compte n'est pas trouvé.
         var account = accountRepository.find(cardInput.getAccountId())
-                                                .orElseThrow(() -> AccountNotFoundException.of(cardInput.getAccountId()));
+                                       .orElseThrow(() -> new AccountNotFoundException(cardInput.getAccountId()));
 
         //Génération de l'identifiant de la carte.
         card.setId(UUID.randomUUID());
+
+        //Renseignement du code haché.
+        card.setCode(((Integer)card.getCode().hashCode()).toString());
 
         //Association avec le compte.
         card.setAccount(account);
@@ -139,26 +173,22 @@ public class CardController {
         card = cardRepository.save(card);
 
         //Transformation de l'entité carte en vue puis ajout des liens d'actions.
-        return cardAssembler.toModel(cardMapper.toView(card));
+        return cardAssembler.toModel(cardMapper.toView(card, currentUserRole));
     }
 
     /**
      * Vérifier les informations d'identification
      * saisies d'une carte bancaire.
      *
-     * @param cardId                    Identifiant de la carte bancaire à modifier.
      * @param cardIdentityInput         Informations saisies de la carte bancaire à vérifier.
      * @return Map<String, Object>      Résultat de la vérification.
      */
-    @PostMapping("{cardId}/identity/check")
-    public Map<String, Object> checkIdentity(@PathVariable("cardId") UUID cardId,
-                                             @RequestBody @Valid CardIdentityInput cardIdentityInput) {
-        //Vérification de la carte et levée d'une exception si la carte n'est pas trouvée.
-        cardRepository.find(cardId).orElseThrow(() -> CardNotFoundException.of(cardId));
-
+    @PostMapping("/identity/check")
+    public Map<String, Object> checkIdentity(@RequestBody @Valid CardIdentityInput cardIdentityInput) {
         //Vérification de l'identité du compte.
-        Boolean cardIdentityChecked = cardRepository.checkIdentity(cardId, cardIdentityInput.getNumber(),
-                                                                   cardIdentityInput.getCryptogram(), cardIdentityInput.getExpirationDate());
+        Boolean cardIdentityChecked = cardRepository.checkIdentity(cardIdentityInput.getNumber(),
+                                                                   cardIdentityInput.getCryptogram(),
+                                                                   cardIdentityInput.getExpirationDate().toInstant().toString().substring(0, 7)) == 1;
 
         //Résultat.
         Map<String, Object> resultJSONAsMap = new HashMap<String, Object>();
@@ -169,6 +199,7 @@ public class CardController {
             resultJSONAsMap.put("checked", false);
             resultJSONAsMap.put("message", "Card identity not checked!");
         }
+
         return resultJSONAsMap;
     }
 
@@ -181,12 +212,12 @@ public class CardController {
      */
     @PostMapping("{cardId}/code/check")
     public Map<String, Object> checkCode(@PathVariable("cardId") UUID cardId,
-                            @RequestBody @Valid CardCodeInput cardCodeInput) {
+                                         @RequestBody @Valid CardCodeInput cardCodeInput) {
         //Vérification de la carte et levée d'une exception si la carte n'est pas trouvée.
-        cardRepository.find(cardId).orElseThrow(() -> CardNotFoundException.of(cardId));
+        cardRepository.find(cardId).orElseThrow(() -> new CardNotFoundException(cardId));
 
         //Vérification du code de la carte.
-        Boolean cardIdentityChecked = cardRepository.checkCode(cardId, cardCodeInput.getCode());
+        Boolean cardIdentityChecked = cardRepository.checkCode(cardId, ((Integer)cardCodeInput.getCode().hashCode()).toString()) == 1;
 
         //Résultat.
         Map<String, Object> resultJSONAsMap = new HashMap<String, Object>();
@@ -197,26 +228,33 @@ public class CardController {
             resultJSONAsMap.put("checked", false);
             resultJSONAsMap.put("message", "Card code not checked!");
         }
+
         return resultJSONAsMap;
     }
 
     /**
      * Faire expirer une carte bancaire.
      *
-     * @param cardId    Identifiant de la carte bancaire à faire expirer.
+     * @param cardId                     Identifiant de la carte bancaire à faire expirer.
+     * @return EntityModel<CardView>     Vue sur la carte bancaire expirée.
      */
     @PostMapping("/{cardId}/expire")
     @Transactional
-    public void expire(@PathVariable("cardId") UUID cardId) {
-        //Recherche de la carte lev  hée d'une exception si la carte n'est pas trouvée.
-        var card =  cardRepository.find(cardId)
-                                         .orElseThrow(() -> CardNotFoundException.of(cardId));
+    public EntityModel<CardView> expire(@PathVariable("cardId") UUID cardId) {
+        //Récupération des données de l'utilisateur connecté.
+        var currentUserRole = getCurrentUserRole();
+
+        //Recherche de la carte levée d'une exception si la carte n'est pas trouvée.
+        var card = cardRepository.find(cardId).orElseThrow(() -> new CardNotFoundException(cardId));
 
         //Modification de la carte.
         card.setExpired(true);
 
         //Sauvegarde des modifications.
         cardRepository.save(card);
+
+        //Transformation de l'entité carte en vue puis ajout des liens d'actions.
+        return cardAssembler.toModel(cardMapper.toView(card, currentUserRole));
     }
 
     /**
@@ -231,9 +269,12 @@ public class CardController {
     @Transactional
     public EntityModel<CardView> update(@PathVariable("cardId") UUID cardId,
                                         @RequestBody @Valid CardInput cardInput) {
-        //Recherche de la carte et levée d'une exception si la carte n'est pas trouvée.
-        var card = cardRepository.find(cardId)
-                                        .orElseThrow(() -> CardNotFoundException.of(cardId));
+        //Récupération des données de l'utilisateur connecté.
+        var currentUserRole = getCurrentUserRole();
+
+        //Recherche de la carte et levée d'une exception si la carte n'est pas trouvée,
+        //ou que les droits sont insuffisants.
+        var card = findOrThrowIfNotPresentOrNoAccess(cardId);
 
         //Vérification du droit de modification.
         //Si la carte a été bloquée.
@@ -248,18 +289,18 @@ public class CardController {
             } else {
                 //Recherche du compte associé et levée d'une exception si le compte n'est pas trouvé.
                 var account = accountRepository.find(cardInput.getAccountId())
-                                                        .orElseThrow(() -> AccountNotFoundException.of(cardInput.getAccountId()));
+                                               .orElseThrow(() -> new AccountNotFoundException(cardInput.getAccountId()));
 
                 //Récupération des informations saisies.
-                card.setNumber(card.getNumber());
-                card.setCryptogram(card.getCryptogram());
-                card.setExpirationDate(card.getExpirationDate());
-                card.setCode(card.getCode());
-                card.setCeiling(card.getCeiling());
-                card.setVirtual(card.getVirtual());
-                card.setLocalization(card.getLocalization());
-                card.setContactless(card.getContactless());
-                card.setBlocked(card.getBlocked());
+                card.setNumber(cardInput.getNumber());
+                card.setCryptogram(cardInput.getCryptogram());
+                card.setExpirationDate(cardInput.getExpirationDate());
+                card.setCode(((Integer)cardInput.getCode().hashCode()).toString());
+                card.setCeiling(cardInput.getCeiling());
+                card.setVirtual(cardInput.getVirtual());
+                card.setLocalization(cardInput.getLocalization());
+                card.setContactless(cardInput.getContactless());
+                card.setBlocked(cardInput.getBlocked());
 
                 //Association avec le compte.
                 card.setAccount(account);
@@ -268,7 +309,7 @@ public class CardController {
                 card = cardRepository.save(card);
 
                 //Transformation de l'entité carte en vue puis ajout des liens d'actions.
-                return cardAssembler.toModel(cardMapper.toView(card));
+                return cardAssembler.toModel(cardMapper.toView(card, currentUserRole));
             }
         }
     }
@@ -285,9 +326,12 @@ public class CardController {
     @Transactional
     public EntityModel<CardView> updatePartial(@PathVariable("cardId") UUID cardId,
                                                @RequestBody CardInput cardInput) {
-        //Recherche de la carte et levée d'une exception si la carte n'est pas trouvée.
-        var card = cardRepository.find(cardId)
-                                        .orElseThrow(() -> CardNotFoundException.of(cardId));
+        //Récupération des données de l'utilisateur connecté.
+        var currentUserRole = getCurrentUserRole();
+
+        //Recherche de la carte et levée d'une exception si la carte n'est pas trouvée,
+        //ou que les droits sont insuffisants.
+        var card = findOrThrowIfNotPresentOrNoAccess(cardId);
 
         //Vérification du droit de modification.
         //Si la carte est bloquée.
@@ -302,36 +346,36 @@ public class CardController {
             } else {
                 //Récupération des informations saisies.
                 if (cardInput.getNumber() != null) {
-                    card.setNumber(card.getNumber());
+                    card.setNumber(cardInput.getNumber());
                 }
                 if (cardInput.getCryptogram() != null) {
-                    card.setCryptogram(card.getCryptogram());
+                    card.setCryptogram(cardInput.getCryptogram());
                 }
                 if (cardInput.getExpirationDate() != null) {
-                    card.setExpirationDate(card.getExpirationDate());
+                    card.setExpirationDate(cardInput.getExpirationDate());
                 }
                 if (cardInput.getCode() != null) {
-                    card.setCode(card.getCode());
+                    card.setCode(((Integer)cardInput.getCode().hashCode()).toString());
                 }
                 if (cardInput.getCeiling() != null) {
-                    card.setCeiling(card.getCeiling());
+                    card.setCeiling(cardInput.getCeiling());
                 }
                 if (cardInput.getVirtual() != null) {
-                    card.setVirtual(card.getVirtual());
+                    card.setVirtual(cardInput.getVirtual());
                 }
                 if (cardInput.getLocalization() != null) {
-                    card.setLocalization(card.getLocalization());
+                    card.setLocalization(cardInput.getLocalization());
                 }
                 if (cardInput.getContactless() != null) {
-                    card.setContactless(card.getContactless());
+                    card.setContactless(cardInput.getContactless());
                 }
                 if (cardInput.getBlocked() != null) {
-                    card.setBlocked(card.getBlocked());
+                    card.setBlocked(cardInput.getBlocked());
                 }
                 if (cardInput.getAccountId() != null) {
                     //Recherche du compte associé et levée d'une exception si le compte n'est pas trouvé.
                     var account = accountRepository.find(cardInput.getAccountId())
-                                                            .orElseThrow(() -> AccountNotFoundException.of(cardInput.getAccountId()));
+                                                    .orElseThrow(() -> new AccountNotFoundException(cardInput.getAccountId()));
                     //Association avec le compte.
                     card.setAccount(account);
                 }
@@ -345,7 +389,7 @@ public class CardController {
                 card = cardRepository.save(card);
 
                 //Transformation de l'entité carte en vue puis ajout des liens d'actions.
-                return cardAssembler.toModel(cardMapper.toView(card));
+                return cardAssembler.toModel(cardMapper.toView(card, currentUserRole));
             }
         }
     }

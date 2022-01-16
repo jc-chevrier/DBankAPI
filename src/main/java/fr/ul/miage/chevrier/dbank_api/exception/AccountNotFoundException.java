@@ -17,7 +17,4 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AccountNotFoundException extends RuntimeException {
     private final UUID id;
-    public static AccountNotFoundException of(UUID id) {
-        return new AccountNotFoundException(id);
-    }
 }

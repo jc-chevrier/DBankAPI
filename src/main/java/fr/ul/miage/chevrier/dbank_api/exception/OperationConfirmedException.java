@@ -17,7 +17,4 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OperationConfirmedException extends RuntimeException {
     private final UUID id;
-    public static OperationConfirmedException of(UUID id) {
-        return new OperationConfirmedException(id);
-    }
 }

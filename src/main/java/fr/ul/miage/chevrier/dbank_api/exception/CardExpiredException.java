@@ -17,7 +17,4 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CardExpiredException extends RuntimeException {
     private final UUID id;
-    public static CardExpiredException of(UUID id) {
-        return new CardExpiredException(id);
-    }
 }

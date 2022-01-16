@@ -39,7 +39,7 @@ public class Card implements Serializable {
 
     private Boolean blocked;
 
-    private Boolean expired;
+    private Boolean expired = false;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date dateAdded = new Date();
@@ -49,4 +49,20 @@ public class Card implements Serializable {
     @ManyToOne
     @JoinColumn(name = "ACCOUNT_ID", referencedColumnName = "ID")
     private Account account;
+
+    /**
+     * Obtenir le numéro de la carte partiellement :
+     * avec seuls les 4 chiffres à la fin visibles.
+     *
+     * @return String       Numéro partiellement visible.
+     */
+    public String getPartialNumber() {
+        String partialNumber = "";
+        Integer numberLength = number.length();
+        for(int i = 0; i < (numberLength - 4); i++) {
+            partialNumber += "*";
+        }
+        partialNumber += number.substring(numberLength - 4, numberLength);
+        return partialNumber;
+    }
 }

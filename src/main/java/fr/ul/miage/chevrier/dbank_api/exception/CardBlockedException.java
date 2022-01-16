@@ -18,7 +18,4 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CardBlockedException extends RuntimeException {
     private final UUID id;
-    public static CardBlockedException of(UUID id) {
-        return new CardBlockedException(id);
-    }
 }

@@ -9,12 +9,14 @@ import fr.ul.miage.chevrier.dbank_api.mapper.OperationMapper;
 import fr.ul.miage.chevrier.dbank_api.repository.AccountRepository;
 import fr.ul.miage.chevrier.dbank_api.repository.CardRepository;
 import fr.ul.miage.chevrier.dbank_api.repository.OperationRepository;
+import fr.ul.miage.chevrier.dbank_api.security.Role;
 import fr.ul.miage.chevrier.dbank_api.validator.OperationValidator;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -84,17 +86,20 @@ public class OperationController {
             @RequestParam(required = false, name = "dateAdded", defaultValue = "") String dateAdded,
             @RequestParam(required = false, name = "firstAccountId", defaultValue = "") String firstAccountId,
             @RequestParam(required = false, name = "firstAccountCardId", defaultValue = "") String firstAccountCardId) {
+        //Utilisateur et accès.
+        var user = SecurityContextHolder.getContext().getAuthentication();
+        var userIsAdmin = user.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_" + Role.ADMIN.getLabel()));
+
         //Vérification des droits d'accès.
-        var isExternalUser = false;//TODO à revoir
-        if(isExternalUser && (amount != null)) {
+        if(!userIsAdmin && (amount != null)) {
             //Pas de droit d'accès et levée d'une exception.
             throw new AccessDeniedException();
         }
 
         //Recherche des opérations à partir des informations saisies.
-        var operations =  operationRepository.findAll(interval, offset, id, label, amount, secondAccountName,
-                                                                    secondAccountCountry, secondAccountIBAN, rate, category,
-                                                                    confirmed, dateAdded, firstAccountId, firstAccountCardId);
+        var operations =  operationRepository.findAll(interval, offset, id.replaceAll("-", ""), label, amount,
+                                                      secondAccountName, secondAccountCountry, secondAccountIBAN, rate,
+                                                      category, confirmed, dateAdded, firstAccountId, firstAccountCardId);
 
         //Transformation des entités opérations en vues puis ajout des liens d'actions.
         return operationAssembler.toCollectionModel(operationMapper.toView(operations));
@@ -110,7 +115,7 @@ public class OperationController {
     public EntityModel<OperationView> find(@PathVariable("operationId") UUID operationId) {
         //Recherche de l'oépration et levée d'une exception si l'opération n'est pas trouvée.
         var operation =  operationRepository.find(operationId)
-                                                       .orElseThrow(() -> OperationNotFoundException.of(operationId));
+                                                       .orElseThrow(() -> new OperationNotFoundException(operationId));
 
         //Transformation de l'entité opération en vue puis ajout des liens d'actions.
         return operationAssembler.toModel(operationMapper.toView(operation));
@@ -134,14 +139,14 @@ public class OperationController {
 
         //Recherche du premier compte associé et levée d'une exception si le compte n'est pas trouvé.
         var firstAccount = accountRepository.find(operationInput.getFirstAccountId())
-                                                     .orElseThrow(() -> AccountNotFoundException.of(operationInput.getFirstAccountId()));
+                                                     .orElseThrow(() -> new AccountNotFoundException(operationInput.getFirstAccountId()));
 
         //Si l'opération est un paiement par carte.
         //Recherche de la carte associée et levée d'une exception si la carte n'est pas trouvée.
         Card firstAccountCard = null;
         if(operationIsACardPayment) {
             firstAccountCard = cardRepository.find(operationInput.getFirstAccountCardId())
-                                             .orElseThrow(() -> CardNotFoundException.of(operationInput.getFirstAccountCardId()));
+                                             .orElseThrow(() -> new CardNotFoundException(operationInput.getFirstAccountCardId()));
         }
 
         //Génération de l'identifiant de l'opération.
@@ -177,7 +182,7 @@ public class OperationController {
     public void confirm(@PathVariable("operationId") UUID operationId) {
         //Recherche de l'opération et levée d'une exception si l'opération n'est pas trouvée.
         var operation =  operationRepository.find(operationId)
-                                                       .orElseThrow(() -> OperationNotFoundException.of(operationId));
+                                                       .orElseThrow(() -> new OperationNotFoundException(operationId));
 
         //Modification de l'opération.
         operation.setConfirmed(true);
@@ -204,7 +209,7 @@ public class OperationController {
                                              @RequestBody @Valid OperationInput operationInput) {
         //Recherche de l'entité et levée d'une exception si l'entité n'est pas trouvée.
         var operation = operationRepository.find(operationId)
-                                                      .orElseThrow(() -> OperationNotFoundException.of(operationId));
+                                                      .orElseThrow(() -> new OperationNotFoundException(operationId));
 
         //Vérification du droit de modification.
         //Si l'opération a été confirmée.
@@ -217,14 +222,14 @@ public class OperationController {
 
             //Recherche de l'entité compte associée et levée d'une exception si l'entité n'est pas trouvée.
             var firstAccount = accountRepository.find(operationInput.getFirstAccountId())
-                                                         .orElseThrow(() -> AccountNotFoundException.of(operationInput.getFirstAccountId()));
+                                                         .orElseThrow(() -> new AccountNotFoundException(operationInput.getFirstAccountId()));
 
             //Si l'opération est un paiement par carte.
             //Recherche de la carte associée et levée d'une exception si la carte n'est pas trouvée.
             Card firstAccountCard = null;
             if(operationIsACardPayment) {
                 firstAccountCard = cardRepository.find(operationInput.getFirstAccountCardId())
-                                                 .orElseThrow(() -> CardNotFoundException.of(operationInput.getFirstAccountCardId()));
+                                                 .orElseThrow(() -> new CardNotFoundException(operationInput.getFirstAccountCardId()));
             }
 
             //Récupération des informations saisies.
@@ -271,7 +276,7 @@ public class OperationController {
                                                   @RequestBody OperationInput operationInput) {
         //Recherche de l'opération et levée d'une exception si l'oépration n'est pas trouvée.
         var operation = operationRepository.find(operationId)
-                                                      .orElseThrow(() -> OperationNotFoundException.of(operationId));
+                                                      .orElseThrow(() -> new OperationNotFoundException(operationId));
 
         //Vérification du droit de modification.
         //Si d'autre champ autre que la catégorie ont
@@ -308,13 +313,13 @@ public class OperationController {
         if(operationInput.getFirstAccountId() != null) {
             //Recherche du compte associé et levée d'une exception si le compte n'est pas trouvé.
             var firstAccount = accountRepository.find(operationInput.getFirstAccountId())
-                                                         .orElseThrow(() -> AccountNotFoundException.of(operationInput.getFirstAccountId()));
+                                                         .orElseThrow(() -> new AccountNotFoundException(operationInput.getFirstAccountId()));
             operation.setFirstAccount(firstAccount);
         }
         if(operationInput.getFirstAccountCardId() != null) {
             //Recherche de la carte associée et levée d'une exception si la carte n'est pas trouvée.
             var firstAccountCard = cardRepository.find(operationInput.getFirstAccountCardId())
-                                                        .orElseThrow(() -> CardNotFoundException.of(operationInput.getFirstAccountCardId()));
+                                                        .orElseThrow(() -> new CardNotFoundException(operationInput.getFirstAccountCardId()));
             operation.setFirstAccountCard(firstAccountCard);
         }
 

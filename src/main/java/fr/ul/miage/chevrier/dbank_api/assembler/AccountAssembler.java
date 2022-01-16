@@ -22,8 +22,7 @@ public class AccountAssembler implements RepresentationModelAssembler<AccountVie
     public EntityModel<AccountView> toModel(AccountView accountView) {
         return EntityModel.of(accountView,
                               linkTo(methodOn(AccountController.class)
-                                     .findAll(null, null, null, null, null, null,
-                                             null, null, null, null, null, null))
+                                     .findAll(null, null, null, null, null, null, null, null, null, null, null, null))
                                      .withRel("collection"),
                               linkTo(methodOn(AccountController.class)
                                      .find(accountView.getId()))
@@ -37,8 +36,7 @@ public class AccountAssembler implements RepresentationModelAssembler<AccountVie
                                                                     .collect(Collectors.toList());
         return CollectionModel.of(accountModel,
                                   linkTo(methodOn(AccountController.class)
-                                         .findAll(null, null, null, null, null, null,
-                                                  null, null, null, null, null, null))
+                                         .findAll(null, null, null, null, null, null, null, null, null, null, null, null))
                                          .withSelfRel());
     }
 }

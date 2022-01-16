@@ -10,8 +10,7 @@ import javax.validation.Validator;
 import java.util.Set;
 
 /**
- * Validateur pour les comptes bancaires
- * des clients.
+ * Validateur pour les comptes bancaires.
  */
 @Service
 @ResponseStatus(HttpStatus.BAD_REQUEST)

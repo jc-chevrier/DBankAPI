@@ -58,22 +58,24 @@ public interface AccountRepository extends CrudRepository<Account, UUID> {
      * @param passportNumber        Filtre partiel sur le numéro de passeport du client du compte.
      * @param phoneNumber           Filtre partiel sur le numéro de téléphone du client du compte.
      * @param IBAN                  Filtre partiel sur l'IBAN du client du compte.
+     * @param secret                Filtre partiel sur le secret du client du compte.
      * @param balance               Filtre partiel sur le solde du client du compte.
      * @param dateAdded             Filtre partiel sur la date d'ajout du compte.
      * @return List<Account>        Comptes bancaires actifs trouvés.
      */
     @Query(value = "SELECT * " +
                     "FROM ACCOUNT " +
-                    "WHERE ID LIKE CONCAT('%', :id, '%') " +
-                    "AND FIRST_NAME LIKE CONCAT('%', :firstName, '%') " +
-                    "AND LAST_NAME LIKE CONCAT('%', :lastName, '%') " +
-                    "AND BIRTH_DATE LIKE CONCAT('%', :birthDate, '%') " +
-                    "AND COUNTRY LIKE CONCAT('%', :country, '%') " +
+                    "WHERE LOWER(ID) LIKE CONCAT('%', :id, '%') " +
+                    "AND LOWER(FIRST_NAME) LIKE LOWER(CONCAT('%', :firstName, '%')) " +
+                    "AND LOWER(LAST_NAME) LIKE LOWER(CONCAT('%', :lastName, '%')) " +
+                    "AND TO_CHAR(BIRTH_DATE, 'yyyy-MM') LIKE CONCAT('%', :birthDate, '%') " +
+                    "AND LOWER(COUNTRY) LIKE LOWER(CONCAT('%', :country, '%')) " +
                     "AND PASSPORT_NUMBER LIKE CONCAT('%', :passportNumber, '%') " +
                     "AND PHONE_NUMBER LIKE CONCAT('%', :phoneNumber, '%') " +
-                    "AND IBAN LIKE CONCAT('%', :IBAN, '%') " +
+                    "AND LOWER(IBAN) LIKE LOWER(CONCAT('%', :IBAN, '%')) " +
+                    "AND LOWER(SECRET) LIKE LOWER(CONCAT('%', :secret, '%')) " +
                     "AND BALANCE LIKE CONCAT('%', :balance, '%') " +
-                    "AND DATE_ADDED LIKE CONCAT('%', :dateAdded, '%') " +
+                    "AND TO_CHAR(DATE_ADDED, 'yyyy-MM') LIKE CONCAT('%', :dateAdded, '%') " +
                     "AND ACTIVE = TRUE " +
                     "LIMIT :interval " +
                     "OFFSET :offset",
@@ -83,10 +85,12 @@ public interface AccountRepository extends CrudRepository<Account, UUID> {
                           @Param("lastName") String lastName, @Param("birthDate") String birthDate,
                           @Param("country") String country, @Param("passportNumber") String passportNumber,
                           @Param("phoneNumber") String phoneNumber, @Param("IBAN") String IBAN,
-                          @Param("balance") Double balance, @Param("dateAdded") String dateAdded);
+                          @Param("secret") String secret, @Param("balance") String balance,
+                          @Param("dateAdded") String dateAdded);
 
     /**
-     * Chercher un compte bancaire actif en précisant son identifiant.
+     * Chercher un compte bancaire actif en
+     * précisant son identifiant.
      *
      * @param accountId                 Identifiant du compte bancaire actif cherché.
      * @return Optional<Account>        Compte bancaire actif cherché.
@@ -98,8 +102,8 @@ public interface AccountRepository extends CrudRepository<Account, UUID> {
     Optional<Account> find(@Param("accountId") UUID accountId);
 
     /**
-     * Supprimer un compte bancaire en précisant son identifiant,
-     * en le passant à inactif.
+     * Supprimer un compte bancaire en précisant
+     * son identifiant, en le passant à inactif.
      *
      * @param accountId         Identifiant du compte bancaire à supprimer.
      */

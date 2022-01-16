@@ -69,18 +69,18 @@ public interface OperationRepository extends CrudRepository<Operation, UUID> {
     @Query(value = "SELECT * " +
                     "FROM OPERATION " +
                     "WHERE ID LIKE CONCAT('%', :id, '%') " +
-                    "AND LABEL LIKE CONCAT('%', :label, '%') " +
+                    "AND LOWER(LABEL) LIKE LOWER(CONCAT('%', :label, '%')) " +
                     "AND AMOUNT LIKE CONCAT('%', :amount, '%') " +
-                    "AND SECOND_ACCOUNT_NAME LIKE CONCAT('%', :secondAccountName, '%') " +
-                    "AND SECOND_ACCOUNT_COUNTRY LIKE CONCAT('%', :secondAccountCountry, '%') " +
-                    "AND SECOND_ACCOUNT_IBAN LIKE CONCAT('%', :secondAccountIBAN, '%') " +
+                    "AND LOWER(SECOND_ACCOUNT_NAME) LIKE LOWER(CONCAT('%', :secondAccountName, '%')) " +
+                    "AND LOWER(SECOND_ACCOUNT_COUNTRY) LIKE LOWER(CONCAT('%', :secondAccountCountry, '%')) " +
+                    "AND LOWER(SECOND_ACCOUNT_IBAN) LIKE LOWER(CONCAT('%', :secondAccountIBAN, '%')) " +
                     "AND RATE LIKE CONCAT('%', :rate, '%') " +
-                    "AND CATEGORY LIKE CONCAT('%', :category, '%') " +
+                    "AND LOWER(CATEGORY) LIKE LOWER(CONCAT('%', :category, '%')) " +
                     "AND CONFIRMED LIKE CONCAT('%', :confirmed, '%') " +
-                    "AND DATE_ADDED LIKE CONCAT('%', :dateAdded, '%') " +
+                    "AND TO_CHAR(DATE_ADDED, 'yyyy-MM') LIKE CONCAT('%', :dateAdded, '%') " +
                     "AND ACTIVE = TRUE " +
-                    "AND FIRST_ACCOUNT_ID LIKE CONCAT('%', :firstAccountId, '%') " +
-                    "AND FIRST_ACCOUNT_CARD_ID LIKE CONCAT('%', :firstAccountCardId, '%') " +
+                    "AND LOWER(FIRST_ACCOUNT_ID) LIKE LOWER(CONCAT('%', :firstAccountId, '%')) " +
+                    "AND LOWER(FIRST_ACCOUNT_CARD_ID) LIKE LOWER(CONCAT('%', :firstAccountCardId, '%')) " +
                     "LIMIT :interval " +
                     "OFFSET :offset",
             nativeQuery = true)

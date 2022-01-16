@@ -17,7 +17,4 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OperationNotFoundException extends RuntimeException {
     private final UUID id;
-    public static OperationNotFoundException of(UUID id) {
-        return new OperationNotFoundException(id);
-    }
 }

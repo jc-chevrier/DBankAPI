@@ -17,7 +17,4 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CardNotFoundException extends RuntimeException {
     private final UUID id;
-    public static CardNotFoundException of(UUID id) {
-        return new CardNotFoundException(id);
-    }
 }

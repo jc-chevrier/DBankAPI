@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.NonFinal;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -21,11 +23,7 @@ public class AccountView {
 
     private String lastName;
 
-    private Date birthDate;
-
     private String country;
-
-    private String passportNumber;
 
     private String phoneNumber;
 
