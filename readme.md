@@ -11,7 +11,7 @@ ____
 ### Description globale
 
 Cette API permet la communication avec la `DBank` ou `Digital Bank`,
-qui est une banque numérique fictive (inventée pour le projet).
+qui est une banque numérique fictive inventée pour le projet.
 
 Elle peut être comparée à des applications telles que `Revolut.com`.
 
