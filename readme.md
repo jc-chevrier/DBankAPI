@@ -95,13 +95,13 @@ Les sources du projet sont réparties selon cette arborescence :
           controller/     Répertoire des classes de traitement des requêtes HTTP en fonction 
                           demandes, rôles, etc.
           dto/            Répertoire des objets échangés entre l'API et les logiciels clients :
-                          saisies et vues ppour chaque entité.
+                          saisies et vues pour chaque entité.
           entity/         Répertoire des entités / structures de données de la banque.
           exception/      Répertoire des exceptions utilisées par les contrôleurs pour la bonne
                           réponse aux demandes.
           mapper/         Répertoire des classes de mapping entre les DTOs (saisies, vues) et les entités.
           repository/     Répertoire des classes pour l'interrogation de la base de données H2.
-          security/       Répertoire des classes gérant la scéurirté dans le projet, référenciation des
+          security/       Répertoire des classes gérant la sécurirté dans le projet, référenciation des
                           URIs de l'API par rôle, etc.
           validator/      Répertoire des validateurs manuels des entités.
 ___
