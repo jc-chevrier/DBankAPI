@@ -13,7 +13,7 @@ ____
 Cette API permet la communication avec la `DBank` ou `Digital Bank`,
 qui est une banque numérique fictive inventée pour le projet.
 
-Elle peut être comparée à des applications telles que `Revolut.com`.
+Cetet banque numérique `DBank` être comparée à des applications telles que `Revolut.com`.
 
 Elle permet l'échange avec 4 types de rôle bien déterminés : 
 
