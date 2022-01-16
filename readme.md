@@ -25,7 +25,7 @@ ____
 (si vous ne l'avez pas déjà).
 
 - Lancer le serveur Keycloak.
-Pour le lancer en local, dans le répertoire de Keycloak, lancer, `bin\standalone.bat`
+Pour le lancer en local, aller dans le répertoire de Keycloak, et lancer `bin\standalone.bat`
 ou `bin/standalone.sh` selon votre OS.
 
 - Importer sur Keycloak la configuration `keycloak/configuration.json`,
