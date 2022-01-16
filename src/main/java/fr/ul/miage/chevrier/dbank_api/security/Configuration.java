@@ -103,8 +103,7 @@ public class Configuration {
                     .antMatchers("/").authenticated()
 
                     //Droits des admins sur les consoles des bases de données de dev et de test.
-                    .antMatchers("/dev_database/console/**").anonymous()//TODO
-                    .antMatchers("/test_database/console/**").hasRole(Role.ADMIN.getLabel())
+                    .antMatchers("/dev_database/console/**").hasRole(Role.ADMIN.getLabel())
 
 
                     //Droits des admins, clients, ATMs, et marchands sur les comptes.
