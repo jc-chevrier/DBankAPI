@@ -8,32 +8,6 @@ ____
 CHEVRIER Jean-Christophe
 
 ____
-### Description globale
-
-Cette API permet la communication avec la `DBank` ou `Digital Bank`,
-qui est une banque numérique fictive inventée pour le projet.
-
-Cetet banque numérique `DBank` peut être comparée à des applications telles que `Revolut.com`.
-
-L'API permet l'échange avec 4 types de rôle bien déterminés : 
-
-- `Admin` : rôle des personnes ou des logiciels internes de la `DBank`, exerçant des
-  actions sur les données de la banque, sans aucunes limitations.
-
-- `Client` : rôle des clients ou des applications mobiles des clients de la `DBank`, via lesquelles les clients
-effectuent des actions sur leurs données : virement, changement de numéro de téléphone, demande de nouveau compte, ou 
-de nouvelle carte, gestion des plafonds de leurs cartes, blocage de leurs cartes, etc.
-
-- `ATM` : GAB en français : Guichet Automatique Bancaire, ce rôle correspond aux accès des distributeurs automatiques,
-qui interrogent l'API pour différentes actions, telles que vérifier le code d'une carte ou retirer de l'argent
-sur un compte, voir les dernières opérations, etc.
-
-- `Merhant` : marchand en français, ce rôle correspond aux accès des sites de e-commerce, qui communiquent avec l'API 
-pour vérifier les informations d'une carte, ou encore réaliser des opérations bancaires / transactions.
-
-Comme vous venez de le lire, un rôle peut donc correspondre à une personne humaine, tout comme à un logiciel client de l'API.
-
-____
 ### Technologies, librairies, frameworks principaux
 
 - `Java 17`
@@ -66,6 +40,59 @@ les différents rôles existants : `Admin`,
 `dbank_api.bat` ou `dbank_api.sh` selon votre OS (les exécuter dans leur répertoire respectif). Au lancement des exécutables,
 la base de données est automatiquement peuplée avec des exemples d'opérations,
 de cartes, et de comptes.
+
+____
+### Description globale
+
+Cette API permet la communication avec la `DBank` ou `Digital Bank`,
+qui est une banque numérique fictive inventée pour le projet.
+
+Cetet banque numérique `DBank` peut être comparée à des applications telles que `Revolut.com`.
+
+L'API permet l'échange avec 4 types de rôle bien déterminés :
+
+- `Admin` : rôle des personnes ou des logiciels internes de la `DBank`, exerçant des
+  actions sur les données de la banque, sans aucunes limitations.
+
+- `Client` : rôle des clients ou des applications mobiles des clients de la `DBank`, via lesquelles les clients
+  effectuent des actions sur leurs données : virement, changement de numéro de téléphone, demande de nouveau compte, ou
+  de nouvelle carte, gestion des plafonds de leurs cartes, blocage de leurs cartes, etc.
+
+- `ATM` : GAB en français : Guichet Automatique Bancaire, ce rôle correspond aux accès des distributeurs automatiques,
+  qui interrogent l'API pour différentes actions, telles que vérifier le code d'une carte ou retirer de l'argent
+  sur un compte, voir les dernières opérations, etc.
+
+- `Merhant` : marchand en français, ce rôle correspond aux accès des sites de e-commerce, qui communiquent avec l'API
+  pour vérifier les informations d'une carte, ou encore réaliser des opérations bancaires / transactions.
+
+<b>Remarque TRES importante</b> : 
+Comme vous venez de le lire, un rôle peut donc correspondre à une personne humaine, <span style="color:red"><b>tout comme à un logiciel client de l'API</b></span>.
+
+___
+### Règles de gestion
+
+Voici ce qu'il faut savoir our la gestion l'API en fonction des rôles :
+- Un `admin` a accès a toutes les fonctionnalités de l'API, et les vues
+que lui renvoie l'API contiennent plus d'informations que pour les autres rôles,
+en effet certaines informations ne sont pas visibles que pour certains rôles.
+Un admin a aussi certaines fonctionnalités qui lui sont réservées comme le fait de confirmer 
+les opérations.
+
+- Un `client` a accès à ses comptes, à ses cartes, et à ses opérations, il peut 
+ les lister, les filtrer, les consulter. Pour ce qui est de la modification, cela
+dépend, si c'est une opération par exemple, il ne peut pas la modifier.
+Il ne peut rien supprimer.
+
+- Un `ATM` peut vérifier le code d'une carte, lister les opérations d'un compte, filtrer
+  les comptes en fonction de leurs informations, et obtenir les informations d'un compte.
+
+- Un `Merchant` peut vérifier les informations d'une carte, consulter, ajouter,et supprimer 
+  des opérations. Etant un acteur extérieur, `DBank` restreint fortement ses droits.
+
+![Diagramme de classes DBankAPI](doc/rights.png)
+...
+
+Remarque, pour voir les routes exactes qui correspondent à chaque fonctionnalité, nous vous invitons à consulter le code.
 
 ___
 ### Conception et base de données
@@ -107,5 +134,3 @@ Les sources du projet sont réparties selon cette arborescence :
           security/       Répertoire des classes gérant la sécurirté dans le projet, référenciation des
                           URIs de l'API par rôle, etc.
           validator/      Répertoire des validateurs manuels des entités.
-___
-### Routes 
