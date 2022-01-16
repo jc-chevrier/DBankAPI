@@ -17,7 +17,7 @@ Cetet banque numérique `DBank` peut être comparée à des applications telles 
 
 Elle permet l'échange avec 4 types de rôle bien déterminés : 
 
-- `Admin` : rôle des personnes ou des logiciels de la `DBank` exerçant des
+- `Admin` : rôle des personnes ou des logiciels internes de la `DBank` exerçant des
   actions sur les données de la banque, sans aucunes limitations.
 
 - `Client` : rôle des clients ou des applications mobiles de la `DBank`, via lesquelles un client
@@ -30,6 +30,9 @@ sur un compte, voir les dernières opérations, etc
 
 - `Merhant` : marchand en français, ce rôle correspond aux accès des sites de e-commerce, qui communiquent avec l'API 
 pour vérifier les informations d'une carte, ou encore réaliser des opérations bancaires / transactions.
+
+<br>
+Comme vous avez pu le lire un rôle peut correspondre à uhe personne humaine ou un logiciel client de l'API.
 
 ____
 ### Technologies, librairies, frameworks principaux
