@@ -31,7 +31,7 @@ sur un compte, voir les dernières opérations, etc
 - `Merhant` : marchand en français, ce rôle correspond aux accès des sites de e-commerce, qui communiquent avec l'API 
 pour vérifier les informations d'une carte, ou encore réaliser des opérations bancaires / transactions.
 
-Comme vous venez de le lire, un rôle peut donc correspondre à uhn personne humaine ou un logiciel client de l'API.
+Comme vous venez de le lire, un rôle peut donc correspondre à une personne humaine ou un logiciel client de l'API.
 
 ____
 ### Technologies, librairies, frameworks principaux
