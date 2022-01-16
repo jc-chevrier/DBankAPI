@@ -15,3 +15,7 @@ VALUES
 ('e5a707d00945f4c7cba02e80ce826a2a', '7595753267527538',  '101', parsedatetime('2023-12', 'yyyy-MM'), '1631461', 5000, false, false, true, false, false, '5d707d00945f4c7cba02e344ce83a222', CURRENT_TIMESTAMP(), true),
 ('6d707d00945f4c7cba02e80ce826a221', '1235753267531574',  '774', parsedatetime('2027-09', 'yyyy-MM'), '1689115', 4500, false, false, true, false, false, '1d707d00945f4c7cba02e80ce826a232', CURRENT_TIMESTAMP(), true),
 ('22707d00945f4c7cba02e80ce826a201', '13295753267527422',  '274', parsedatetime('2023-07', 'yyyy-MM'), '1510407', 2300, false, false, true, false, false, '22707d00945f4c7344380ce83434abb1', CURRENT_TIMESTAMP(), true);
+
+INSERT INTO OPERATION (id, label, amount, second_account_name, second_account_country, second_account_iban, rate, category, confirmed, first_account_id, first_account_card_id, date_added, active)
+VALUES
+('57607d00945f4c7cba02e80ce826a268', 'Boulangerie NCY', 5.6, 'La boulangère', 'France', 'FR1230001007941234567890142', null, null, true, '5d707d00945f4c7cba02e80ce826a2ad', 'ef707d00945f4c7cba02e80ce826a2ad', CURRENT_TIMESTAMP(), true);

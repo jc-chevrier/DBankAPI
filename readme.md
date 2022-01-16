@@ -4,10 +4,57 @@
 API pour effectuer des échanges métier avec la `DBank`.
 
 ____
+### Sommaire
+<ol> 
+  <li>
+    <a href="#from">
+      Auteurs
+    </a>
+  </li>
+  <li>
+    <a href="#tech">
+      Technologies, librairies, frameworks principaux
+    </a>
+  </li>
+  <li>
+    <a href="#install">
+      Installation et exécution
+    </a>
+  </li>
+  <li>
+    <a href="#description">
+      Description globale
+    </a>
+  </li>
+  <li>
+    <a href="#functions">
+      Règles de gestion et fonctionnalités
+    </a>
+  </li>
+  <li>
+    <a href="#db">
+      Conception et base de données
+    </a>
+  </li>
+  <li>
+    <a href="#software">
+      Architecture logicielle
+    </a>
+  </li>
+  <li>
+    <a href="#example">
+      Exemple d'utilisation
+    </a>
+  </li>
+</ol>
+
+____
+<a name="from"></a>
 ### Auteurs
 CHEVRIER Jean-Christophe
 
 ____
+<a name="tech"></a>
 ### Technologies, librairies, frameworks principaux
 
 - `Java 17`
@@ -17,6 +64,7 @@ ____
 - `Keycloak`
 
 ____
+<a name="install"></a>
 ### Installation et exécution
 
 - Télécharger et installer `Java 17`
@@ -42,6 +90,7 @@ la base de données est automatiquement peuplée avec des exemples d'opérations
 de cartes, et de comptes.
 
 ____
+<a name="description"></a>
 ### Description globale
 
 Cette API permet la communication avec la `DBank` ou `Digital Bank`,
@@ -65,20 +114,21 @@ L'API permet l'échange avec 4 types de rôle bien déterminés :
 - `Merhant` : marchand en français, ce rôle correspond aux accès des sites de e-commerce, qui communiquent avec l'API
   pour vérifier les informations d'une carte, ou encore réaliser des opérations bancaires / transactions.
 
-<b>Remarque TRES importante</b> : 
-Comme vous venez de le lire, un rôle peut donc correspondre à une personne humaine, <span style="color:red"><b>tout comme à un logiciel client de l'API</b></span>.
+<b>Remarque TRES importante</b> : comme vous venez de le lire, un rôle peut donc correspondre à une personne humaine, 
+<span style="color : red"><b>tout comme à un logiciel client de l'API</b></span>.
 
 ___
-### Règles de gestion
+<a name="functions"></a>
+### Règles de gestion et fonctionnalités
 
-Voici ce qu'il faut savoir our la gestion l'API en fonction des rôles :
-- Un `admin` a accès a toutes les fonctionnalités de l'API, et les vues
-que lui renvoie l'API contiennent plus d'informations que pour les autres rôles,
-en effet certaines informations ne sont pas visibles que pour certains rôles.
-Un admin a aussi certaines fonctionnalités qui lui sont réservées comme le fait de confirmer 
-les opérations.
+Voici ce qu'il faut savoir pour la gestion l'API en fonction des rôles, <b>dans les grandes lignes</b> :
+- Un `Admin` a accès a toutes les fonctionnalités de l'API, et les vues
+que lui renvoie l'API contiennent plus d'informations que pour les autres rôles.
+En effet, certaines informations ne sont visibles que pour certains rôles.
+Un `Admin` a aussi certaines fonctionnalités qui lui sont réservées comme le fait de confirmer 
+les opérations, ou de faire expirer les cartes.
 
-- Un `client` a accès à ses comptes, à ses cartes, et à ses opérations, il peut 
+- Un `Client` a accès à ses comptes, à ses cartes, et à ses opérations, il peut 
  les lister, les filtrer, les consulter. Pour ce qui est de la modification, cela
 dépend, si c'est une opération par exemple, il ne peut pas la modifier.
 Il ne peut rien supprimer.
@@ -86,15 +136,19 @@ Il ne peut rien supprimer.
 - Un `ATM` peut vérifier le code d'une carte, lister les opérations d'un compte, filtrer
   les comptes en fonction de leurs informations, et obtenir les informations d'un compte.
 
-- Un `Merchant` peut vérifier les informations d'une carte, consulter, ajouter,et supprimer 
-  des opérations. Etant un acteur extérieur, `DBank` restreint fortement ses droits.
+- Un `Merchant` peut vérifier les informations d'une carte, consulter, ajouter, et supprimer 
+  des opérations. Etant un acteur extérieur, `DBank` restreint fortement ses droits par sécurité.
 
+La suppression sur l'API n'est possible que sur les opérations, les cartes
+et les comptes ne peuvent pas être supprimées.
+
+Ci-dessous une capture d'écran partielle de la répartition des droits dans la classe `src/[...]/dbank_api/Security/Configuration.java` :
 ![Diagramme de classes DBankAPI](doc/rights.png)
-...
-
-Remarque, pour voir les routes exactes qui correspondent à chaque fonctionnalité, nous vous invitons à consulter le code.
+<br>
+Etc...
 
 ___
+<a name="db"></a>
 ### Conception et base de données
 
 Ci-après vous pouvez voir le diagramme de classes qui a été réalisé
@@ -116,11 +170,13 @@ Remarques importantes :
 d'une autre banque.
 
 ___
-### Arborescence
+<a name="software"></a>
+### Architecture logicielle
 
 Les sources du projet sont réparties selon cette arborescence :
 
-      src/fr[...]/java
+      src/[...]/dbank_api
+
           assembler/      Répertoire des classes implémentant HATEOAS dans le projet.
           controller/     Répertoire des classes de traitement des requêtes HTTP en fonction 
                           demandes, rôles, etc.
@@ -134,3 +190,19 @@ Les sources du projet sont réparties selon cette arborescence :
           security/       Répertoire des classes gérant la sécurirté dans le projet, référenciation des
                           URIs de l'API par rôle, etc.
           validator/      Répertoire des validateurs manuels des entités.
+
+___
+<a name="example"></a>
+### Example d'utilisation
+
+Ci-dessous un exemple d'utilisation.
+
+Obtention d'un `Bearer Token` de `Keycloak` pour notre utilisateur "admin" de rôle `Admin` :
+![Obtention d'un bearer token de Keycloak](doc/keycloak.png)
+
+Recherche des comptes bancaires de Mario Aliti en tant que l'utilisateur Admin
+(on renseigne son token) :
+![Recherche des comptes de Mario Aliti](doc/accounts_request.png)
+
+Réponse de `DBankAPI` :
+![Recherche des comptes de Mario Aliti](doc/accounts_request_result.png)
