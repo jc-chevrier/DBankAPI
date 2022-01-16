@@ -19,20 +19,23 @@ ____
 ### Installation et exécution
 
 Télécharger et installer `Java 17`
+<br>
 (si vous ne l'avez pas déjà).
 
-Télécharger et installer `Keycloak`  
+Télécharger et installer `Keycloak` 
+<br>
 (si vous ne l'avez pas déjà).
 
 Lancer le serveur Keycloak.
+<br>
 Pour le lancer en local : `bin\standalone.bat `
 ou `bin/standalone.sh` selon votre OS.
 
 Importer sur Keycloak la configuration
-présente dans `keycloak/configuration.json`
+présente dans `keycloak/configuration.json`,
 sur le répertoire GitHub du projet.
 
-Créer des utilisateurs sur Keycloak pour
+Créer des utilisateurs sur Keycloak,pour
 les différents rôles existants : `Admin`,
 `Client`, `ATM`, `Merchant`.
 
