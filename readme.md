@@ -20,9 +20,9 @@ Elle permet l'échange avec 4 types de rôle bien déterminés :
 - `Admin` : rôle des personnes ou des logiciels de la `DBank` exerçant des
   actions sur les données de la banque, sans aucunes limitations.
 
-- `Client` : rôle des clients ou des applications mobiles de la `DBank` via lesquelles un client
+- `Client` : rôle des clients ou des applications mobiles de la `DBank`, via lesquelles un client
 effectue des actions sur ses données : virement, changement de numéro de téléphone, demande de nouveau compte ou 
-carte etc.
+de carte etc.
 
 - `ATM` : GAB en français : Guichet Automatique Bancaire, ce rôle correspond aux accès des distributeurs automatiques
 qui interrogent l'API pour différentes actions telles que vérifier le code d'une carte ou retirer de l'argent
