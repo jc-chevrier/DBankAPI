@@ -15,23 +15,23 @@ qui est une banque numérique fictive inventée pour le projet.
 
 Cetet banque numérique `DBank` peut être comparée à des applications telles que `Revolut.com`.
 
-Elle permet l'échange avec 4 types de rôle bien déterminés : 
+L'API permet l'échange avec 4 types de rôle bien déterminés : 
 
-- `Admin` : rôle des personnes ou des logiciels internes de la `DBank` exerçant des
+- `Admin` : rôle des personnes ou des logiciels internes de la `DBank`, exerçant des
   actions sur les données de la banque, sans aucunes limitations.
 
-- `Client` : rôle des clients ou des applications mobiles de la `DBank`, via lesquelles un client
-effectue des actions sur ses données : virement, changement de numéro de téléphone, demande de nouveau compte ou 
-de carte etc.
+- `Client` : rôle des clients ou des applications mobiles des clients de la `DBank`, via lesquelles les clients
+effectuent des actions sur leurs données : virement, changement de numéro de téléphone, demande de nouveau compte, ou 
+de nouvelle carte, gestion des plafonds de leurs cartes, blocage de leurs cartes, etc.
 
 - `ATM` : GAB en français : Guichet Automatique Bancaire, ce rôle correspond aux accès des distributeurs automatiques,
 qui interrogent l'API pour différentes actions, telles que vérifier le code d'une carte ou retirer de l'argent
-sur un compte, voir les dernières opérations, etc
+sur un compte, voir les dernières opérations, etc.
 
 - `Merhant` : marchand en français, ce rôle correspond aux accès des sites de e-commerce, qui communiquent avec l'API 
 pour vérifier les informations d'une carte, ou encore réaliser des opérations bancaires / transactions.
 
-Comme vous venez de le lire, un rôle peut donc correspondre à une personne humaine ou un logiciel client de l'API.
+Comme vous venez de le lire, un rôle peut donc correspondre à une personne humaine, tout comme à un logiciel client de l'API.
 
 ____
 ### Technologies, librairies, frameworks principaux
@@ -71,12 +71,22 @@ ___
 ### Conception et base de données
 
 Ci-après vous pouvez voir le diagramme de classes qui a été réalisé
-pour concevoir la ba se de données l'API;
+pour concevoir la base de données l'API :
 
 ![Diagramme de classes DBankAPI](doc/class_diagram.png)
 
+Remarques importantes :
+- L'attribut `active` des tables a été prévu au départ pour modéliser la suppression des données dans la banque. Ce qu'il faut comprendre, c'est que les données ne sont jamais vraiment supprimées, elles ne sont jamais que passées à inactives via cet attribut.
+- La table `Operation` représente les opérations mais également les virements / transferts, tout a été prévu dans la même table pour ce qui est des échanges entre comptes.
+- Une opération est liée à un compte et peut aussi être liée en plus également à une carte précise du compte, cela dépend de l'opération, selon si elle a été réalisée 
+  via une carte bancaire ou entre IBANs directement.
+- L'attribut `dateAdded` des tables, date d'ajout en français, sert à faire en sorte que toute forme de donnée soit horodatée dans la base 
+  de données.
+- L'attribut `secret` dans la table `Account`, sert à connaitre l'utilisateur de Keycloak associé au compte bancaire.
+- L'attribut `code` dans la table `Card` désigne le code de la carte, et est stocké de manière haché dans la base de données.
+
 ___
-### Arborescenece
+### Arborescence
 
 Les sources du projet sont réparties selon cette arborescence :
 
