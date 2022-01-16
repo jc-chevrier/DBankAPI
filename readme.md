@@ -26,7 +26,7 @@ de carte etc.
 
 - `ATM` : GAB en français : Guichet Automatique Bancaire, ce rôle correspond aux accès des distributeurs automatiques,
 qui interrogent l'API pour différentes actions, telles que vérifier le code d'une carte ou retirer de l'argent
-sur un compte, voir les dernières oéprations, etc
+sur un compte, voir les dernières opérations, etc
 
 - `Merhant` : marchand en français, ce rôle correspond aux accès des sites de e-commerce, qui communiquent avec l'API 
 pour vérifier les informations d'une carte ou encore réaliser des opérations bancaires / transactions sur une carte 
