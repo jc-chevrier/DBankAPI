@@ -19,15 +19,12 @@ ____
 ### Installation et exécution
 
 Télécharger et installer `Java 17`
-<br>
 (si vous ne l'avez pas déjà).
 
-Télécharger et installer `Keycloak` 
-<br>
+Télécharger et installer `Keycloak`
 (si vous ne l'avez pas déjà).
 
 Lancer le serveur Keycloak.
-<br>
 Pour le lancer en local : `bin\standalone.bat `
 ou `bin/standalone.sh` selon votre OS.
 
