@@ -36,5 +36,5 @@ Créer des utilisateurs sur Keycloak,pour
 les différents rôles existants : `Admin`,
 `Client`, `ATM`, `Merchant`.
 
-Lancer l'API avec les exc exécutables du projet :
+Lancer l'API avec les exécutables du projet :
 `dbank_api.bat` ou`dbank_api.sh` selon votre OS.
