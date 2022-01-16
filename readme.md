@@ -84,8 +84,8 @@ Remarques importantes :
   de données.
 - L'attribut `secret` dans la table `Account`, sert à connaitre l'utilisateur de Keycloak associé au compte bancaire.
 - L'attribut `code` dans la table `Card` désigne le code de la carte, et est stocké de manière haché dans la base de données.
-- Dans la table `Operation`, `firstAccount` désigne le compte dans l'opération qui est déclaré dans la DBank, 
- et  `secondAccount...` désigne le second compte qui peut aussi être déclaré dans la DBank, mais qui peut également être un compte
+- Dans la table `Operation`, `firstAccount` désigne le compte dans l'opération qui est déclaré dans la `DBank`, 
+ et  `secondAccount...` désigne le second compte qui peut aussi être déclaré dans la `DBank`, mais qui peut également être un compte
 d'une autre banque.
 
 ___
