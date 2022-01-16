@@ -127,7 +127,7 @@ public class Configuration {
                     //Droits des admins, clients, ATMs, et marchands sur les opérations.
                     .antMatchers(HttpMethod.GET, "/operations").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel(), Role.ATM.getLabel())
                     .antMatchers(HttpMethod.GET, "/operations/*").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel(), Role.ATM.getLabel(), Role.MERCHANT.getLabel())
-                    .antMatchers(HttpMethod.POST, "/operations").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel(), Role.ATM.getLabel())
+                    .antMatchers(HttpMethod.POST, "/operations").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel(), Role.ATM.getLabel(), Role.MERCHANT.getLabel())
                     .antMatchers(HttpMethod.POST, "/operations/*/confirm").hasAnyRole(Role.ADMIN.getLabel())
                     .antMatchers(HttpMethod.PUT, "/operations/*").hasAnyRole(Role.ADMIN.getLabel())
                     .antMatchers(HttpMethod.PATCH, "/operations/*").hasAnyRole(Role.ADMIN.getLabel())

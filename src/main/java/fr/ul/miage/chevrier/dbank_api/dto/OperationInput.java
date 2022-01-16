@@ -36,5 +36,5 @@ public class OperationInput {
     @NotNull
     private UUID firstAccountId;
 
-    private UUID firstAccountCardId;
+    private UUID firstAccountCardNumber;
 }
