@@ -25,7 +25,7 @@ Télécharger et installer `Keycloak`
 (si vous ne l'avez pas déjà).
 
 Lancer le serveur Keycloak.
-Pour le lancer en local : `bin\standalone.bat `
+Pour le lancer en local : `bin\standalone.bat`
 ou `bin/standalone.sh` selon votre OS.
 
 Importer sur Keycloak la configuration
