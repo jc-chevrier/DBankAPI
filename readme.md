@@ -31,7 +31,7 @@ ou `bin/standalone.sh` selon votre OS.
 - Importer sur Keycloak la configuration `keycloak/configuration.json`,
 présente sur le répertoire `GitHub` du projet.
 
-- Créer des utilisateurs sur Keycloak,pour
+- Créer des utilisateurs sur Keycloak, pour
 les différents rôles existants : `Admin`,
 `Client`, `ATM`, `Merchant`.
 
