@@ -73,14 +73,14 @@ ____
 - Télécharger et installer `Keycloak`
 (si vous ne l'avez pas déjà).
 
-- Lancer le serveur Keycloak.
+- Lancer le serveur `Keycloak`.
 Pour le lancer en local, aller dans le répertoire de `Keycloak`, et lancer `bin\standalone.bat`
 ou `bin/standalone.sh` selon votre OS.
 
-- Importer sur Keycloak la configuration `keycloak/configuration.json`,
+- Importer sur `Keycloak` la configuration `keycloak/configuration.json`,
 présente sur le répertoire `GitHub` du projet.
 
-- Créer des utilisateurs sur Keycloak, pour
+- Créer des utilisateurs sur `Keycloak`, pour
 les différents rôles existants : `Admin`,
 `Client`, `ATM`, `Merchant`.
 
@@ -143,7 +143,7 @@ La suppression sur l'API n'est possible que sur les opérations. Les cartes
 et les comptes ne peuvent pas être supprimées.
 
 Ci-dessous une capture d'écran partielle de la répartition des droits dans la classe `src/[...]/dbank_api/security/Configuration.java` :
-![Diagramme de classes DBankAPI](doc/rights.png)
+![Capture d'écran partielle de la répartition des droits](doc/rights.png)
 <br>
 Etc...
 
@@ -198,11 +198,12 @@ ___
 Ci-dessous un exemple d'utilisation.
 
 Obtention d'un `Bearer Token` de `Keycloak` pour notre utilisateur <b>admin</b> de rôle `Admin` :
-![Obtention d'un bearer token de Keycloak](doc/keycloak_get_request.png)
+![Capture d'écran de l'obtention d'un bearer token de Keycloak](doc/keycloak_get_request.png)
 
 Recherche des comptes bancaires de Mario Aliti en tant que l'utilisateur <b>admin</b>
 (on renseigne son token) :
-![Recherche des comptes de Mario Aliti](doc/account_get_request.png) ...
+![Capture d'écran de recherche des comptes de Mario Aliti](doc/account_get_request.png) ...
 
 Réponse de `DBankAPI` :
-![Recherche des comptes de Mario Aliti](doc/account_get_request_result.png)
+<br>
+![Capture d'écran du résultat de la recherche des comptes de Mario Aliti](doc/account_get_request_result.png)

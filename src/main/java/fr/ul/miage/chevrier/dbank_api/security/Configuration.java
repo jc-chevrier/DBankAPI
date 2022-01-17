@@ -115,7 +115,7 @@ public class Configuration {
 
                     //Droits des admins, clients, ATMs, et marchands sur les cartes.
                     .antMatchers(HttpMethod.GET, "/cards").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel())
-                    .antMatchers(HttpMethod.GET, "/cards/{cardId}").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel())
+                    .antMatchers(HttpMethod.GET, "/cards/*").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel())
                     .antMatchers(HttpMethod.POST, "/cards").hasAnyRole(Role.ADMIN.getLabel(), Role.CLIENT.getLabel())
                     .antMatchers(HttpMethod.POST, "/cards/*/code/check").hasAnyRole(Role.ADMIN.getLabel(), Role.ATM.getLabel())
                     .antMatchers(HttpMethod.POST, "/cards/identity/check").hasAnyRole(Role.ADMIN.getLabel(), Role.MERCHANT.getLabel())
