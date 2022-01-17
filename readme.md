@@ -198,11 +198,11 @@ ___
 Ci-dessous un exemple d'utilisation.
 
 Obtention d'un `Bearer Token` de `Keycloak` pour notre utilisateur "admin" de rôle `Admin` :
-![Obtention d'un bearer token de Keycloak](doc/keycloak.png)
+![Obtention d'un bearer token de Keycloak](doc/keycloak_get_request.png)
 
 Recherche des comptes bancaires de Mario Aliti en tant que l'utilisateur Admin
 (on renseigne son token) :
-![Recherche des comptes de Mario Aliti](doc/accounts_request.png)
+![Recherche des comptes de Mario Aliti](doc/accounts_get_request.png)
 
 Réponse de `DBankAPI` :
-![Recherche des comptes de Mario Aliti](doc/accounts_request_result.png)
+![Recherche des comptes de Mario Aliti](doc/accounts_get_request_result.png)
