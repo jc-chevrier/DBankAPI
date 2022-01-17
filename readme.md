@@ -87,7 +87,7 @@ les différents rôles existants : `Admin`,
 - Lancer l'API avec les exécutables du projet :
 `dbank_api.bat` ou `dbank_api.sh` selon votre OS (les exécuter dans leur répertoire respectif). Au lancement des exécutables,
 la base de données est automatiquement peuplée avec des exemples d'opérations,
-de cartes, et de comptes.
+de cartes, et de comptes, et l'API écoute sur le port TCP `8091`.
 
 ____
 <a name="description"></a>
@@ -111,7 +111,7 @@ L'API permet l'échange avec 4 types de rôle bien déterminés :
   qui interrogent l'API pour différentes actions, telles que vérifier le code d'une carte ou retirer de l'argent
   sur un compte, voir les dernières opérations, etc.
 
-- `Merhant` : marchand en français, ce rôle correspond aux accès des sites de e-commerce, qui communiquent avec l'API
+- `Merchant` : marchand en français, ce rôle correspond aux accès des sites de e-commerce, qui communiquent avec l'API
   pour vérifier les informations d'une carte, ou encore réaliser des opérations bancaires / transactions.
 
 <b>Remarque TRES importante</b> : comme vous venez de le lire, un rôle peut donc correspondre à une personne humaine, 
@@ -139,10 +139,10 @@ Il ne peut rien supprimer.
 - Un `Merchant` peut vérifier les informations d'une carte, consulter, ajouter, et supprimer 
   des opérations. Etant un acteur extérieur, `DBank` restreint fortement ses droits par sécurité.
 
-La suppression sur l'API n'est possible que sur les opérations, les cartes
+La suppression sur l'API n'est possible que sur les opérations. Les cartes
 et les comptes ne peuvent pas être supprimées.
 
-Ci-dessous une capture d'écran partielle de la répartition des droits dans la classe `src/[...]/dbank_api/Security/Configuration.java` :
+Ci-dessous une capture d'écran partielle de la répartition des droits dans la classe `src/[...]/dbank_api/security/Configuration.java` :
 ![Diagramme de classes DBankAPI](doc/rights.png)
 <br>
 Etc...
@@ -193,16 +193,16 @@ Les sources du projet sont réparties selon cette arborescence :
 
 ___
 <a name="example"></a>
-### Example d'utilisation
+### Exemple d'utilisation
 
 Ci-dessous un exemple d'utilisation.
 
-Obtention d'un `Bearer Token` de `Keycloak` pour notre utilisateur "admin" de rôle `Admin` :
+Obtention d'un `Bearer Token` de `Keycloak` pour notre utilisateur <b>admin</b> de rôle `Admin` :
 ![Obtention d'un bearer token de Keycloak](doc/keycloak_get_request.png)
 
-Recherche des comptes bancaires de Mario Aliti en tant que l'utilisateur Admin
+Recherche des comptes bancaires de Mario Aliti en tant que l'utilisateur <b>admin</b>
 (on renseigne son token) :
-![Recherche des comptes de Mario Aliti](doc/accounts_get_request.png)...
+![Recherche des comptes de Mario Aliti](doc/account_get_request.png) ...
 
 Réponse de `DBankAPI` :
-![Recherche des comptes de Mario Aliti](doc/accounts_get_request_result.png)
+![Recherche des comptes de Mario Aliti](doc/account_get_request_result.png)

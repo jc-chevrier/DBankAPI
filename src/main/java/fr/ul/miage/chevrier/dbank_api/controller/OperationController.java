@@ -138,7 +138,7 @@ public class OperationController extends BaseController {
             @RequestParam(required = false, name = "secondAccountName", defaultValue = "") String secondAccountName,
             @RequestParam(required = false, name = "secondAccountCountry", defaultValue = "") String secondAccountCountry,
             @RequestParam(required = false, name = "secondAccountIBAN", defaultValue = "") String secondAccountIBAN,
-            @RequestParam(required = false, name = "rate", defaultValue = "") Double rate,
+            @RequestParam(required = false, name = "rate", defaultValue = "") String rate,
             @RequestParam(required = false, name = "category", defaultValue = "") String category,
             @RequestParam(required = false, name = "confirmed", defaultValue = "") Boolean confirmed,
             @RequestParam(required = false, name = "dateAdded", defaultValue = "") String dateAdded,
@@ -239,11 +239,11 @@ public class OperationController extends BaseController {
      */
     @PostMapping("/{operationId}/confirm")
     @Transactional
-    public void confirm(@PathVariable("operationId") UUID operationId) {
+    public EntityModel<OperationView> confirm(@PathVariable("operationId") UUID operationId) {
         //Récupération des données de l'utilisateur connecté.
         var currentUserRole = getCurrentUserRole();
 
-        //Recherche de l'opération et levée d'une exception si l'opération n'est pas trouvée,.
+        //Recherche de l'opération et levée d'une exception si l'opération n'est pas trouvée,
         //ou que les droits sont insuffisants.
         var operation = findOrThrowIfNotPresentOrNoAccess(operationId);
 
@@ -256,6 +256,9 @@ public class OperationController extends BaseController {
         //Sauvegarde des modifications.
         operationRepository.save(operation);
         accountRepository.save(operation.getFirstAccount());
+
+        //Transformation de l'entité opération en vue puis ajout des liens d'actions.
+        return operationAssembler.toModel(operationMapper.toView(operation, currentUserRole));
     }
 
     /**

@@ -66,7 +66,7 @@ public interface CardRepository extends CrudRepository<Card, UUID> {
      * @param accountId             Filtre partiel sur l'identifiant du compte associé à la carte.
      * @return List<Card>           Cartes actives trouvées.
      */
-    @Query(value = "SELECT * " +
+    @Query(value = "SELECT C.* " +
                    "FROM CARD AS C " +
                    "INNER JOIN ACCOUNT AS A " +
                    "ON A.ID = C.ACCOUNT_ID " +
@@ -81,9 +81,9 @@ public interface CardRepository extends CrudRepository<Card, UUID> {
                    "AND C.BLOCKED LIKE CONCAT('%', :blocked, '%') " +
                    "AND C.EXPIRED LIKE CONCAT('%', :expired, '%') " +
                    "AND TO_CHAR(C.DATE_ADDED, 'yyyy-MM') LIKE CONCAT('%', :dateAdded, '%') " +
-                   "AND C.ACTIVE = TRUE " +
                    "AND LOWER(C.ACCOUNT_ID) LIKE LOWER(CONCAT('%', :accountId, '%')) " +
                    "AND LOWER(A.SECRET) LIKE LOWER(CONCAT('%', :accountSecret, '%')) " +
+                   "AND C.ACTIVE = TRUE " +
                    "LIMIT :interval " +
                    "OFFSET :offset",
             nativeQuery = true)

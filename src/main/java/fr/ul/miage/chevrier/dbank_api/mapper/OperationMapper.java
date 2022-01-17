@@ -28,12 +28,13 @@ public interface OperationMapper {
             return new OperationCompleteView(operation.getId(), operation.getLabel(), operation.getAmount(),
                     operation.getSecondAccountName(), operation.getSecondAccountCountry(), operation.getSecondAccountIBAN(),
                     operation.getRate(), operation.getCategory(), operation.getConfirmed(), operation.getDateAdded(),
-                    operation.getFirstAccount().getId(), operation.getFirstAccountCard().getId());
+                    operation.getFirstAccount().getId(),
+                    operation.getFirstAccountCard() != null ? operation.getFirstAccountCard().getId() : null);
         } else {
             return new OperationView(operation.getId(), operation.getLabel(), operation.getAmount(),
                     operation.getSecondAccountName(), operation.getSecondAccountCountry(), operation.getSecondAccountIBAN(),
                     operation.getRate(), operation.getConfirmed(), operation.getDateAdded(), operation.getFirstAccount().getId(),
-                    operation.getFirstAccountCard().getId());
+                    operation.getFirstAccountCard() != null ? operation.getFirstAccountCard().getId() : null);
         }
     }
 

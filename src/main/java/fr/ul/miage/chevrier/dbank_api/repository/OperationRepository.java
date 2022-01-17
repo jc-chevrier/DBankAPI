@@ -65,24 +65,25 @@ public interface OperationRepository extends CrudRepository<Operation, UUID> {
      * @param firstAccountCardId        Identifiant de la carte du premier compte de l'opération.
      * @return List<Operation>          Opérations actives trouvées.
      */
-    @Query(value = "SELECT * " +
+    @Query(value = "SELECT O.* " +
                     "FROM OPERATION AS O " +
                     "INNER JOIN ACCOUNT AS FA " +
                     "ON FA.ID = O.FIRST_ACCOUNT_ID " +
-                    "WHERE O.ID LIKE CONCAT('%', :id, '%') " +
+                    "WHERE LOWER(O.ID) LIKE LOWER(CONCAT('%', :id, '%')) " +
                     "AND LOWER(O.LABEL) LIKE LOWER(CONCAT('%', :label, '%')) " +
                     "AND O.AMOUNT LIKE CONCAT('%', :amount, '%') " +
                     "AND LOWER(O.SECOND_ACCOUNT_NAME) LIKE LOWER(CONCAT('%', :secondAccountName, '%')) " +
                     "AND LOWER(O.SECOND_ACCOUNT_COUNTRY) LIKE LOWER(CONCAT('%', :secondAccountCountry, '%')) " +
                     "AND LOWER(O.SECOND_ACCOUNT_IBAN) LIKE LOWER(CONCAT('%', :secondAccountIBAN, '%')) " +
-                    "AND O.RATE LIKE CONCAT('%', :rate, '%') " +
-                    "AND LOWER(O.CATEGORY) LIKE LOWER(CONCAT('%', :category, '%')) " +
+                    "AND (O.RATE IS NULL OR O.RATE LIKE CONCAT('%', :rate, '%')) " +
+                    "AND (O.CATEGORY IS NULL OR LOWER(O.CATEGORY) LIKE LOWER(CONCAT('%', :category, '%'))) " +
                     "AND O.CONFIRMED LIKE CONCAT('%', :confirmed, '%') " +
                     "AND TO_CHAR(O.DATE_ADDED, 'yyyy-MM') LIKE CONCAT('%', :dateAdded, '%') " +
-                    "AND O.ACTIVE = TRUE " +
                     "AND LOWER(O.FIRST_ACCOUNT_ID) LIKE LOWER(CONCAT('%', :firstAccountId, '%')) " +
-                    "AND LOWER(O.FIRST_ACCOUNT_CARD_ID) LIKE LOWER(CONCAT('%', :firstAccountCardId, '%')) " +
+                    "AND (O.FIRST_ACCOUNT_CARD_ID IS NULL " +
+                    "     OR LOWER(O.FIRST_ACCOUNT_CARD_ID) LIKE LOWER(CONCAT('%', :firstAccountCardId, '%'))) " +
                     "AND LOWER(FA.SECRET) LIKE LOWER(CONCAT('%', :firstAccountSecret, '%')) " +
+                    "AND O.ACTIVE = TRUE " +
                     "LIMIT :interval " +
                     "OFFSET :offset",
             nativeQuery = true)
@@ -90,7 +91,7 @@ public interface OperationRepository extends CrudRepository<Operation, UUID> {
                             @Param("id") String id, @Param("label") String label,
                             @Param("amount") String amount, @Param("secondAccountName") String secondAccountName,
                             @Param("secondAccountCountry") String secondAccountCountry, @Param("secondAccountIBAN") String secondAccountIBAN,
-                            @Param("rate") Double rate, @Param("category") String category,
+                            @Param("rate") String rate, @Param("category") String category,
                             @Param("confirmed") Boolean confirmed, @Param("dateAdded") String dateAdded,
                             @Param("firstAccountId") String firstAccountId, @Param("firstAccountCardId") String firstAccountCardId,
                             @Param("firstAccountSecret") String firstAccountSecret);

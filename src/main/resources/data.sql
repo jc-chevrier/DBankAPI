@@ -18,4 +18,7 @@ VALUES
 
 INSERT INTO OPERATION (id, label, amount, second_account_name, second_account_country, second_account_iban, rate, category, confirmed, first_account_id, first_account_card_id, date_added, active)
 VALUES
-('57607d00945f4c7cba02e80ce826a268', 'Boulangerie NCY', 5.6, 'La boulangère', 'France', 'FR1230001007941234567890142', null, null, true, '5d707d00945f4c7cba02e80ce826a2ad', 'ef707d00945f4c7cba02e80ce826a2ad', CURRENT_TIMESTAMP(), true);
+('57607d00945f4c7cba02e80ce826a262', 'Boulangerie NCY', 5.6, 'La boulangère', 'France', 'FR2630001007941234567890142', null, null, true, '5d707d00945f4c7cba02e80ce826a2ad', 'ef707d00945f4c7cba02e80ce826a2ad', CURRENT_TIMESTAMP(), true),
+('321607d00945f4c7cba02e80ce826a26', 'Carrefour', 32.3, 'Carrefour', 'France', 'FR4230001007941234567890142', null, null, true, '5d707d00945f4c7cba02e80ce826a2ad', 'ef707d00945f4c7cba02e80ce826a2ad', CURRENT_TIMESTAMP(), true),
+('26ae0700945f4c7cba02e80ce826a268', 'Prelevement', 55, 'Engie', 'France', 'FR1330001007941234567890142', null, null, false, '5d707d00945f4c7cba02e80ce826a2ad', null, CURRENT_TIMESTAMP(), true),
+('21837d00945f4c7cba02e80ce826a261', 'Prelevement', 81.6, 'GDF', 'France', 'FR6730001007941234567890142', null, null, false, '5d707d00945f4c7cba02e80ce826a2ad', null, CURRENT_TIMESTAMP(), true);
