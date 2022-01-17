@@ -202,7 +202,7 @@ Obtention d'un `Bearer Token` de `Keycloak` pour notre utilisateur "admin" de r√
 
 Recherche des comptes bancaires de Mario Aliti en tant que l'utilisateur Admin
 (on renseigne son token) :
-![Recherche des comptes de Mario Aliti](doc/accounts_get_request.png)
+![Recherche des comptes de Mario Aliti](doc/accounts_get_request.png)...
 
 R√©ponse de `DBankAPI` :
 ![Recherche des comptes de Mario Aliti](doc/accounts_get_request_result.png)
